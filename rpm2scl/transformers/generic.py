@@ -15,9 +15,9 @@ class GenericTransformer(Transformer):
     @matches(r'(?<!d)(Requires:\s*)([^[\s]+)') # avoid BuildRequires
     @matches(r'(BuildRequires:\s*)([^\s]+)')
     @matches(r'(?<!d)(Conflicts:\s*)([^\s]+)') # avoid BuildConflicts
-    @matches(r'(BuildConflicts:\s*)(\[^\s]+)')
+    @matches(r'(BuildConflicts:\s*)([^\s]+)')
     @matches(r'(Provides:\s*)([^\s]+)')
-    @matches(r'(Obsoletes:\s*)(\[^\s]+)')
+    @matches(r'(Obsoletes:\s*)([^\s]+)')
     def handle_dependency_tag(self, pattern, text):
         temp = pattern.sub(r'\1%{?scl_prefix}\2', text)
         # handle more Requires on one line, too
