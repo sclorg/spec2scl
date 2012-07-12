@@ -32,3 +32,51 @@ class TestGenericConvertor(object):
     def test_handle_dependency_tag(self, spec, expected):
         patterns = self.t.handle_dependency_tag.matches
         assert self.t.handle_dependency_tag(self.get_pattern_for_spec(patterns, spec), spec) == expected
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('%package \t -n spam', '%package \t -n %{?scl_prefix}spam'),
+        ('%description -n spam', '%description -n %{?scl_prefix}spam'),
+        ('%files -n   spam', '%files -n   %{?scl_prefix}spam'),
+    ])
+    def test_handle_subpackages_should_sclize(self, spec, expected):
+        patterns = self.t.handle_subpackages.matches
+        assert self.t.handle_subpackages(self.get_pattern_for_spec(patterns, spec), spec) == expected
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('%package spam', '%package spam'),
+        ('%description -x spam', '%description -x spam'),
+        ('%files -nnn spam', '%files -nnn spam'),
+    ])
+    def test_handle_subpackages_should_not_sclize(self, spec, expected):
+        patterns = self.t.handle_subpackages.matches
+        assert self.get_pattern_for_spec(patterns, spec) == None
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('%setup', '%setup -n %{pkg_name}-%{version}'),
+        ('%setup -q -c -T', '%setup -n %{pkg_name}-%{version} -q -c -T'),
+    ])
+    def test_handle_setup_macro_should_sclize(self, spec, expected):
+        assert self.t.handle_setup_macro(self.t.handle_setup_macro.matches[0], spec) == expected
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('%setup -n spam', '%setup -n spam'),
+        ('%setup -q -n spam -c', '%setup -q -n spam -c'),
+    ])
+    def test_handle_setup_macro_should_not_sclize(self, spec, expected):
+        assert self.t.handle_setup_macro(self.t.handle_setup_macro.matches[0], spec) == expected
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('Name: spam', 'Name: %{?scl_prefix}spam'),
+        ('Name:spam', 'Name:%{?scl_prefix}spam'),
+        ('Name:  %{?spam}spam', 'Name:  %{?scl_prefix}%{?spam}spam'),
+    ])
+    def test_handle_name_tag(self, spec, expected):
+        assert self.t.handle_name_tag(self.t.handle_name_tag.matches[0], spec) == expected
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('%{name}', '%{pkg_name}'),
+        ('%{pkg_name}', '%{pkg_name}'),
+        ('%{name_spam}', '%{name_spam}'),
+    ])
+    def test_handle_name_macro(self, spec, expected):
+        assert self.t.handle_name_macro(self.t.handle_name_macro.matches[0], spec) == expected
