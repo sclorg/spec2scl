@@ -1,5 +1,3 @@
-import re
-
 from rpm2scl.decorators import matches
 from rpm2scl.transformers.transformer import Transformer
 
