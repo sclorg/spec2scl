@@ -3,14 +3,17 @@ from rpm2scl.settings import *
 
 class Convertor(object):
     def __init__(self, spec, options = None):
-        self.spec = spec
+        spec = self.list_to_str(spec)
+        # strip changelog, we don't want to transform that
+        changelog_pos = spec.find('%changelog')
+        self.spec = spec[:changelog_pos]
+        self.changelog = spec[changelog_pos:]
         self.options = options or {}
 
-        self.fix_split_spec()
-
-    def fix_split_spec(self):
-        if not isinstance(self.spec, str):
-            self.spec = ''.join(self.spec)
+    def list_to_str(self, arg):
+        if not isinstance(arg, str):
+            arg = ''.join(arg)
+        return arg
 
     def convert(self):
-        return Transformer(self.spec, self.options).transform()
+        return '{0}\n\n{1}'.format(Transformer(self.spec, self.options).transform(), self.changelog)
