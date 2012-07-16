@@ -16,11 +16,28 @@ def main():
                         required = False,
                         action = 'store_true'
                        )
+    parser.add_argument('-l', '--list-file',
+                        required = False,
+                        help = 'List of the packages/provides, that will be in the SCL (to convert Requires/BuildRequires properly).',
+                        metavar = 'SCL_CONTENTS_LIST'
+                       )
 
     args = parser.parse_args()
 
     if len(args.specfiles) > 1 and not args.i:
         parser.error('You can only convert more specfiles using -i (in place) mode.')
+
+    scl_list = []
+
+    if args.list_file:
+        try:
+            l = open(args.list_file)
+            scl_list = l.readlines()
+        except IOError as e:
+            print('Could not open file: {0}'.format(e))
+            sys.exit(1)
+        else:
+            f.close()
 
     converted = []
     for specfile in args.specfiles:
@@ -33,7 +50,7 @@ def main():
         else:
             f.close()
 
-        convertor = Convertor(spec = spec)
+        convertor = Convertor(spec = spec, options = {'scl_list': scl_list})
         converted.append(convertor.convert())
 
     for i, conv in enumerate(converted):
