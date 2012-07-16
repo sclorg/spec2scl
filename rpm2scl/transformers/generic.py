@@ -19,13 +19,12 @@ class GenericTransformer(Transformer):
     @matches(r'(Provides:\s*)([^\s]+)')
     @matches(r'(Obsoletes:\s*)([^\s]+)')
     def handle_dependency_tag(self, pattern, text):
-        temp = pattern.sub(r'\1%{?scl_prefix}\2', text)
-        # handle more Requires on one line, too
+        # handle more Requires on one line
         def handle_comma(matchobj):
             return '{0}%{{?scl_prefix}}{1}'.format(matchobj.group(1), matchobj.group(2))
 
-        comma_re = re.compile(r'(,\s*)([^\s,]+)')
-        return comma_re.sub(handle_comma, temp)
+        comma_re = re.compile(r'((?:,|:)\s*)([^\s,]+)')
+        return comma_re.sub(handle_comma, text)
 
     @matches(r'(%package\s+-n\s+)([^\s]+)')
     @matches(r'(%description\s+-n\s+)([^\s]+)')
