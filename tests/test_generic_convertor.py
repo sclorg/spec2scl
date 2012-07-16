@@ -42,7 +42,7 @@ class TestGenericConvertor(object):
         patterns = self.t.handle_dependency_tag_modified_by_list.matches
         if scl_list:
             self.t.options = {'scl_list': scl_list}
-        assert self.t.handle_dependency_tag(self.get_pattern_for_spec(patterns, spec), spec) == expected
+        assert self.t.handle_dependency_tag_modified_by_list(self.get_pattern_for_spec(patterns, spec), spec) == expected
 
 
     @pytest.mark.parametrize(('spec', 'expected'), [
