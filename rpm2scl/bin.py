@@ -41,13 +41,11 @@ def main():
     converted = []
     for specfile in args.specfiles:
         try:
-            f = open(specfile)
-            spec = f.readlines()
+            with open(specfile) as f:
+                spec = f.readlines()
         except IOError as e:
             print('Could not open file: {0}'.format(e))
             sys.exit(1)
-        else:
-            f.close()
 
         convertor = Convertor(spec = spec, options = {'scl_list': scl_list})
         converted.append(convertor.convert())
