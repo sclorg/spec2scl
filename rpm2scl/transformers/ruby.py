@@ -10,5 +10,4 @@ class RubyTransformer(Transformer):
     @matches(r'testrb2 ', one_line = False)
     @matches(r'(?<!-)rspec ', one_line = False) # avoid matching stuff like 'rubygem-rspec ' here
     def handle_ruby_specific_commands(self, pattern, text):
-        print pattern.search(text).groups()
         return self.sclize_all_commands(pattern, text)
