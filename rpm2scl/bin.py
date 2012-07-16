@@ -31,13 +31,12 @@ def main():
 
     if args.list_file:
         try:
-            l = open(args.list_file)
-            scl_list = l.readlines()
+            with open(args.list_file) as l:
+                for i in l.readlines():
+                    scl_list.append(i.strip())
         except IOError as e:
             print('Could not open file: {0}'.format(e))
             sys.exit(1)
-        else:
-            f.close()
 
     converted = []
     for specfile in args.specfiles:
