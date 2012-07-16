@@ -93,14 +93,13 @@ class Transformer(object):
 
             text = text[index + 1:] # so that we don't find it again
 
-            whole_command.append('') # so that we don't loose the last newline when joining
             commands.append('\n'.join(whole_command))
 
         return commands
 
     def sclize_one_command(self, command):
         new_command = [None] * 3
-        new_command[1] = command
+        new_command[1] = command + '\n'
         if self.command_needs_heredoc_for_execution(command):
             new_command[0] = '%{?scl:scl enable %{scl} - << \EOF}\n'
             new_command[2] = '%{?scl:EOF}\n'

@@ -24,7 +24,7 @@ class GenericTransformer(Transformer):
             require_without_version = matchobj.group(2)[0:version_start_index]
 
             scl_list = self.options.get('scl_list', [])
-            if scl_list_effect and (scl_list == [] or require_without_version in scl_list):
+            if (scl_list_effect and (scl_list == [] or require_without_version in scl_list)) or not scl_list_effect:
                 return '{0}%{{?scl_prefix}}{1}'.format(matchobj.group(1), matchobj.group(2))
             return '{0}{1}'.format(matchobj.group(1), matchobj.group(2))
 
