@@ -12,19 +12,29 @@ class GenericTransformer(Transformer):
         scl_init = '%{{?scl:%scl_package {0}}}\n%{{!?scl:%global pkg_name %{{name}}}}'.format(self.get_original_name())
         return '{0}\n\n{1}'.format(scl_init, text)
 
-    @matches(r'(?<!d)(Requires:\s*)([^[\s]+)') # avoid BuildRequires
-    @matches(r'(BuildRequires:\s*)([^\s]+)')
     @matches(r'(?<!d)(Conflicts:\s*)([^\s]+)') # avoid BuildConflicts
     @matches(r'(BuildConflicts:\s*)([^\s]+)')
     @matches(r'(Provides:\s*)([^\s]+)')
     @matches(r'(Obsoletes:\s*)([^\s]+)')
-    def handle_dependency_tag(self, pattern, text):
+    def handle_dependency_tag(self, pattern, text, scl_list_effect = False):
         # handle more Requires on one line
         def handle_comma(matchobj):
-            return '{0}%{{?scl_prefix}}{1}'.format(matchobj.group(1), matchobj.group(2))
+            version_spec_re = re.compile(r'\s*(?:>|<|=)$')
+            version_start_index = version_spec_re.search(matchobj.group(2))
+            require_without_version = matchobj.group(2)[0:version_start_index]
+
+            scl_list = self.options.get('scl_list', [])
+            if scl_list == [] or require_without_version in scl_list:
+                return '{0}%{{?scl_prefix}}{1}'.format(matchobj.group(1), matchobj.group(2))
+            return '{0}{1}'.format(matchobj.group(1), matchobj.group(2))
 
         comma_re = re.compile(r'((?:,|:)\s*)([^\s,]+)')
         return comma_re.sub(handle_comma, text)
+
+    @matches(r'(?<!d)(Requires:\s*)([^[\s]+)') # avoid BuildRequires
+    @matches(r'(BuildRequires:\s*)([^\s]+)')
+    def handle_dependency_tag_modified_by_list(self, pattern, text):
+        return self.handle_dependency_tag(pattern, text, True)
 
     @matches(r'(%package\s+-n\s+)([^\s]+)')
     @matches(r'(%description\s+-n\s+)([^\s]+)')

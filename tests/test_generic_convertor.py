@@ -21,8 +21,6 @@ class TestGenericConvertor(object):
         assert self.t.insert_scl_init(self.t.insert_scl_init.matches[0], spec).find(expected)
 
     @pytest.mark.parametrize(('spec', 'expected'), [
-        ('Requires: spam > 1, spam < 3', 'Requires: %{?scl_prefix}spam > 1, %{?scl_prefix}spam < 3'),
-        ('BuildRequires: python-%{spam}', 'BuildRequires: %{?scl_prefix}python-%{spam}'),
         ('Conflicts:spam', 'Conflicts:%{?scl_prefix}spam'),
         ('BuildConflicts: \t spam', 'BuildConflicts: \t %{?scl_prefix}spam'),
         ('Provides: spam < 3.0', 'Provides: %{?scl_prefix}spam < 3.0'),
@@ -32,6 +30,20 @@ class TestGenericConvertor(object):
     def test_handle_dependency_tag(self, spec, expected):
         patterns = self.t.handle_dependency_tag.matches
         assert self.t.handle_dependency_tag(self.get_pattern_for_spec(patterns, spec), spec) == expected
+
+    @pytest.mark.parametrize(('spec', 'scl_list', 'expected'), [
+        ('Requires: spam > 1, spam < 3', None, 'Requires: %{?scl_prefix}spam > 1, %{?scl_prefix}spam < 3'),
+        ('BuildRequires: python-%{spam}', None, 'BuildRequires: %{?scl_prefix}python-%{spam}'),
+        ('Requires: spam > 1, spam < 3', ['eggs'], 'Requires: spam > 1, spam < 3'),
+        ('Requires: spam > 1, spam < 3', ['spam'], 'Requires: %{?scl_prefix}spam > 1, %{?scl_prefix}spam < 3'),
+        ('BuildRequires: python(spam)', ['python(spam)', 'spam'], 'BuildRequires: %{?scl_prefix}python(spam)'),
+    ])
+    def test_handle_dependency_tag_modified_by_list(self, spec, scl_list, expected):
+        patterns = self.t.handle_dependency_tag_modified_by_list.matches
+        if scl_list:
+            self.t.options = {'scl_list': scl_list}
+        assert self.t.handle_dependency_tag(self.get_pattern_for_spec(patterns, spec), spec) == expected
+
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('%package \t -n spam', '%package \t -n %{?scl_prefix}spam'),
