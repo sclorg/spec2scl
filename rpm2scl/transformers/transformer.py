@@ -83,7 +83,7 @@ class Transformer(object):
             whole_command = []
             # now use it to get the whole command
             index = text.find(matched)
-            for line in text[index:].splitlines(True): #TODO: use enumerate to fix the below TODO :)
+            for line in text.splitlines(True):
                 if line.find(matched) != -1:
                     append = True
                 if append:
@@ -91,6 +91,7 @@ class Transformer(object):
                 if append and not line.rstrip().endswith('\\'):
                     break # sorry :)
 
+            append = False
             text = text[index + 1:] # so that we don't find it again
 
             commands.append('\n'.join(whole_command))
