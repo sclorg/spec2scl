@@ -4,9 +4,9 @@
 from rpm2scl.version import version
 
 try:
-    from setuptools import setup
+    from setuptools import setup, find_packages
 except:
-    from distutils.core import setup
+    from distutils.core import setup, find_packages
 
 
 description = """rpm2scl is a tool to convert RPM specfiles to SCL-style specfiles."""
@@ -21,7 +21,7 @@ setup(
     author_email = 'bkabrda@redhat.com',
     url = 'https://bitbucket.org/bkabrda/rpm2scl/',
     license = 'MIT',
-    packages = ['rpm2scl', ],
+    packages = find_packages(),
     setup_requires = ['pytest',
                       'flexmock >= 0.9.3'
                      ],
