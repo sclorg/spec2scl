@@ -11,16 +11,20 @@ class TestGenericConvertor(object):
             if pattern.search(spec):
                 return pattern
 
-    @pytest.mark.parametrize(('spec', 'expected'), [
-        ('"rubygem install" string should not get modified', '"rubygem install" string should not get modified'),
+    @pytest.mark.parametrize(('spec'), [
+        ('"rubygem install" string should not get modified'),
+        ('"rubygem-rspec" string should not get modified'),
+        ('"rubygem(rspec)" string should not get modified'),
     ])
-    def test_ruby_specific_commands_not_matching(self, spec, expected):
+    def test_ruby_specific_commands_not_matching(self, spec):
         patterns = self.t.handle_ruby_specific_commands.matches
         assert self.get_pattern_for_spec(patterns, spec) == None
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('gem install spam', '%{?scl:scl enable %{scl} "}\ngem install spam%{?scl:"}\n'),
-        ('gem install spam\n', '%{?scl:scl enable %{scl} "}\ngem install spam\n%{?scl:"}\n'),
+        ('gem install spam \\\n --more-spam\n', '%{?scl:scl enable %{scl} "}\ngem install spam \\\n --more-spam\n%{?scl:"}\n'),
+        ('RUBYOPT="-Ilib:test" rspec spec\n', '%{?scl:scl enable %{scl} - << \EOF}\nRUBYOPT="-Ilib:test" rspec spec\n%{?scl:EOF}\n'),
+        ('testrb spam', '%{?scl:scl enable %{scl} "}\ntestrb spam%{?scl:"}\n'),
     ])
     def test_ruby_specific_commands_matching(self, spec, expected):
         patterns = self.t.handle_ruby_specific_commands.matches
