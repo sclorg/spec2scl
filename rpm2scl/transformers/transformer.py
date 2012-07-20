@@ -80,6 +80,7 @@ class Transformer(object):
                 break
             matched = match.group(0)
 
+            append = False
             whole_command = []
             # now use it to get the whole command
             index = text.find(matched)
@@ -91,10 +92,9 @@ class Transformer(object):
                 if append and not line.rstrip().endswith('\\'):
                     break # sorry :)
 
-            append = False
             text = text[index + 1:] # so that we don't find it again
 
-            commands.append('\n'.join(whole_command))
+            commands.append(''.join(whole_command))
 
         return commands
 
