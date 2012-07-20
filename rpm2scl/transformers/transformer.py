@@ -83,7 +83,7 @@ class Transformer(object):
             whole_command = []
             # now use it to get the whole command
             index = text.find(matched)
-            for line in text[index:].splitlines():
+            for line in text[index:].splitlines(True): #TODO: use enumerate to fix the below TODO :)
                 if line.find(matched) != -1:
                     append = True
                 if append:
@@ -99,9 +99,7 @@ class Transformer(object):
 
     def sclize_one_command(self, command):
         new_command = [None] * 3
-        # append newline because join in find_whole_commands doesn't add it, if it was present
-        # TODO if it wasn't present, it is not so bad to have it appended, but may be worth a fix someday
-        new_command[1] = command + '\n'
+        new_command[1] = command
         if self.command_needs_heredoc_for_execution(command):
             new_command[0] = '%{?scl:scl enable %{scl} - << \EOF}\n'
             new_command[2] = '%{?scl:EOF}\n'

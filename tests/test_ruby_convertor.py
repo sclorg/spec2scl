@@ -19,7 +19,8 @@ class TestGenericConvertor(object):
         assert self.get_pattern_for_spec(patterns, spec) == None
 
     @pytest.mark.parametrize(('spec', 'expected'), [
-        ('gem install spam', '%{?scl:scl enable %{scl} "}\ngem install spam\n%{?scl:"}\n'),
+        ('gem install spam', '%{?scl:scl enable %{scl} "}\ngem install spam%{?scl:"}\n'),
+        ('gem install spam\n', '%{?scl:scl enable %{scl} "}\ngem install spam\n%{?scl:"}\n'),
     ])
     def test_ruby_specific_commands_matching(self, spec, expected):
         patterns = self.t.handle_ruby_specific_commands.matches
