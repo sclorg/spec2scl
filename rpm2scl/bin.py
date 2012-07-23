@@ -61,6 +61,3 @@ def main():
                 print('Could not open file: {0}'.format(e))
             else:
                 f.close()
-
-
-main()
