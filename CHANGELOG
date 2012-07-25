@@ -1,0 +1,8 @@
+0.2.2
+- Fix the bad search for original Name: tag.
+
+0.2.1
+- Fix the double converted specfile output.
+
+0.2.0
+- Initial release.
