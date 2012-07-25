@@ -16,16 +16,21 @@ class GenericTransformer(Transformer):
     @matches(r'(BuildConflicts:\s*)([^\s]+)')
     @matches(r'(Provides:\s*)([^\s]+)')
     @matches(r'(Obsoletes:\s*)([^\s]+)')
-    def handle_dependency_tag(self, pattern, text, scl_list_effect = False):
+    def handle_dependency_tag(self, pattern, text, scl_requires_effect = False):
         # handle more Requires on one line
         def handle_comma(matchobj):
             version_spec_re = re.compile(r'\s*(?:>|<|=)$')
             version_start_index = version_spec_re.search(matchobj.group(2))
             require_without_version = matchobj.group(2)[0:version_start_index]
 
-            scl_list = self.options.get('scl_list', [])
-            if (scl_list_effect and (scl_list == [] or require_without_version in scl_list)) or not scl_list_effect:
+            if scl_requires_effect:
+                scl_requires = self.options['scl_requires']
+            else:
+                scl_requires = 'a' # convert all by default
+
+            if scl_requires == 'a' or (not scl_requires == 'n' and require_without_version in scl_requires):
                 return '{0}%{{?scl_prefix}}{1}'.format(matchobj.group(1), matchobj.group(2))
+
             return '{0}{1}'.format(matchobj.group(1), matchobj.group(2))
 
         comma_re = re.compile(r'((?:,|:)\s*)([^\s,]+)')
