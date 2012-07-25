@@ -2,7 +2,9 @@ import pytest
 
 from rpm2scl.transformers.ruby import RubyTransformer
 
-class TestGenericConvertor(object):
+from transformer_test_case import TransformerTestCase
+
+class TestRubyTransformer(TransformerTestCase):
     def setup_method(self, method):
         self.t = RubyTransformer('', {})
 

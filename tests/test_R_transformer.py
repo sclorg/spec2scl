@@ -2,14 +2,11 @@ import pytest
 
 from rpm2scl.transformers.R import RTransformer
 
-class TestGenericConvertor(object):
+from transformer_test_case import TransformerTestCase
+
+class TestRTransformer(TransformerTestCase):
     def setup_method(self, method):
         self.t = RTransformer('', {})
-
-    def get_pattern_for_spec(self, patterns, spec):
-        for pattern in patterns:
-            if pattern.search(spec):
-                return pattern
 
     @pytest.mark.parametrize(('spec'), [
         ('"%{bindir}/R foo" stays'),

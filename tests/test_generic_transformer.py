@@ -2,14 +2,11 @@ import pytest
 
 from rpm2scl.transformers.generic import GenericTransformer
 
-class TestGenericTransformer(object):
+from transformer_test_case import TransformerTestCase
+
+class TestGenericTransformer(TransformerTestCase):
     def setup_method(self, method):
         self.t = GenericTransformer('', {})
-
-    def get_pattern_for_spec(self, patterns, spec):
-        for pattern in patterns:
-            if pattern.search(spec):
-                return pattern
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('', '%{?scl:%scl_package TODO}\n%{!?scl:%global pkg_name %{name}}'),
@@ -32,17 +29,17 @@ class TestGenericTransformer(object):
         patterns = self.t.handle_dependency_tag.matches
         assert self.t.handle_dependency_tag(self.get_pattern_for_spec(patterns, spec), spec) == expected
 
-    @pytest.mark.parametrize(('spec', 'scl_list', 'expected'), [
+    @pytest.mark.parametrize(('spec', 'scl_requires', 'expected'), [
         ('Requires: spam > 1, spam < 3', None, 'Requires: %{?scl_prefix}spam > 1, %{?scl_prefix}spam < 3'),
         ('BuildRequires: python-%{spam}', None, 'BuildRequires: %{?scl_prefix}python-%{spam}'),
         ('Requires: spam > 1, spam < 3', ['eggs'], 'Requires: spam > 1, spam < 3'),
         ('Requires: spam > 1, spam < 3', ['spam'], 'Requires: %{?scl_prefix}spam > 1, %{?scl_prefix}spam < 3'),
         ('BuildRequires: python(spam)', ['python(spam)', 'spam'], 'BuildRequires: %{?scl_prefix}python(spam)'),
     ])
-    def test_handle_dependency_tag_modified_by_list(self, spec, scl_list, expected):
+    def test_handle_dependency_tag_modified_by_list(self, spec, scl_requires, expected):
         patterns = self.t.handle_dependency_tag_modified_by_list.matches
-        if scl_list:
-            self.t.options = {'scl_list': scl_list}
+        if scl_requires:
+            self.t.options = {'scl_requires': scl_requires}
         assert self.t.handle_dependency_tag_modified_by_list(self.get_pattern_for_spec(patterns, spec), spec) == expected
 
 

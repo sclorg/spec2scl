@@ -24,7 +24,7 @@ class GenericTransformer(Transformer):
             require_without_version = matchobj.group(2)[0:version_start_index]
 
             if scl_requires_effect:
-                scl_requires = self.options['scl_requires']
+                scl_requires = self.options.get('scl_requires', 'a')
             else:
                 scl_requires = 'a' # convert all by default
 

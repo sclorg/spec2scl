@@ -4,7 +4,9 @@ import pytest
 
 from rpm2scl.transformers.transformer import Transformer
 
-class TestGenericConvertor(object):
+from transformer_test_case import TransformerTestCase
+
+class TestTransformer(TransformerTestCase):
     def setup_method(self, method):
         self.t = Transformer('', {})
 
