@@ -12,13 +12,14 @@ class TestGenericTransformer(object):
                 return pattern
 
     @pytest.mark.parametrize(('spec', 'expected'), [
-        ('', '%{?scl:%scl_package TODO:}\n%{!?scl:%global pkg_name %{name}}'),
+        ('', '%{?scl:%scl_package TODO}\n%{!?scl:%global pkg_name %{name}}'),
         ('Name:spam', '%{?scl:%scl_package spam}\n%{!?scl:%global pkg_name %{name}}'),
         ('Name: \tspam', '%{?scl:%scl_package spam}\n%{!?scl:%global pkg_name %{name}}'),
         ('Name: python-%{spam}', '%{?scl:%scl_package python-%{spam}}\n%{!?scl:%global pkg_name %{name}}'),
     ])
     def test_insert_scl_init(self, spec, expected):
-        assert self.t.insert_scl_init(self.t.insert_scl_init.matches[0], spec).find(expected)
+        self.t.original_spec = spec # need to assign it here, because Name is taken from original spec
+        assert self.t.insert_scl_init(self.t.insert_scl_init.matches[0], spec).find(expected) != -1
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('Conflicts:spam', 'Conflicts:%{?scl_prefix}spam'),

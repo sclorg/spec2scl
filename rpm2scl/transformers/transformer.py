@@ -61,7 +61,7 @@ class Transformer(object):
     def get_original_name(self):
         name_match = re.compile(r'Name:\s*([^\s]+)').search(self.original_spec)
         if name_match:
-            return name_match.group(0)
+            return name_match.group(1)
         else:
             return 'TODO'
 
