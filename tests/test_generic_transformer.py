@@ -2,7 +2,7 @@ import pytest
 
 from rpm2scl.transformers.generic import GenericTransformer
 
-class TestGenericConvertor(object):
+class TestGenericTransformer(object):
     def setup_method(self, method):
         self.t = GenericTransformer('', {})
 
