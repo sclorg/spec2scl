@@ -1,3 +1,5 @@
+- Fix the bad inserting of %{?scl_prefix} after %{epoch}:
+
 0.2.2
 - Fix the bad search for original Name: tag.
 

@@ -33,7 +33,10 @@ class GenericTransformer(Transformer):
 
             return '{0}{1}'.format(matchobj.group(1), matchobj.group(2))
 
-        comma_re = re.compile(r'((?:,|:)\s*)([^\s,]+)')
+        # the (?:,|s:) deserves an explanation: comma and colon are a separators as in "foo, bar" or "Requires:baz" -
+        # we must however use "s:" instead of just ":", as it would do problems with %{epoch}:baz. Fortunately all the
+        # dependencytags end with s, so we can use "s:".
+        comma_re = re.compile(r'((?:,|s:)\s*)([^\s,]+)')
         return comma_re.sub(handle_comma, text)
 
     @matches(r'(?<!d)(Requires:\s*)([^[\s]+)') # avoid BuildRequires
