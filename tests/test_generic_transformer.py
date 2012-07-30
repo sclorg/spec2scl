@@ -24,6 +24,7 @@ class TestGenericTransformer(TransformerTestCase):
         ('Provides: spam < 3.0', 'Provides: %{?scl_prefix}spam < 3.0'),
         ('Conflicts: spam > 2.0-1', 'Conflicts: %{?scl_prefix}spam > 2.0-1'),
         ('Obsoletes: spam, blah, foo', 'Obsoletes: %{?scl_prefix}spam, %{?scl_prefix}blah, %{?scl_prefix}foo'),
+        ('Obsoletes: spam blah foo', 'Obsoletes: %{?scl_prefix}spam %{?scl_prefix}blah %{?scl_prefix}foo'),
     ])
     def test_handle_dependency_tag(self, spec, expected):
         patterns = self.t.handle_dependency_tag.matches

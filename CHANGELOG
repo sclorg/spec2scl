@@ -1,3 +1,4 @@
+- Insert {?scl_prefix} even after dependencies separated by just spaces, not commas.
 - Fix the bad inserting of %{?scl_prefix} after %{epoch}:
 
 0.2.2

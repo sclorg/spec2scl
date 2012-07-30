@@ -17,27 +17,26 @@ class GenericTransformer(Transformer):
     @matches(r'(Provides:\s*)([^\s]+)')
     @matches(r'(Obsoletes:\s*)([^\s]+)')
     def handle_dependency_tag(self, pattern, text, scl_requires_effect = False):
+        tag = text[0:text.find(':') + 1]
+        deps = text[text.find(':') + 1:]
         # handle more Requires on one line
-        def handle_comma(matchobj):
-            version_spec_re = re.compile(r'\s*(?:>|<|=)$')
-            version_start_index = version_spec_re.search(matchobj.group(2))
-            require_without_version = matchobj.group(2)[0:version_start_index]
+        def handle_one_dep(matchobj):
+            groupdict = matchobj.groupdict('')
 
             if scl_requires_effect:
                 scl_requires = self.options.get('scl_requires', 'a')
             else:
                 scl_requires = 'a' # convert all by default
 
-            if scl_requires == 'a' or (not scl_requires == 'n' and require_without_version in scl_requires):
-                return '{0}%{{?scl_prefix}}{1}'.format(matchobj.group(1), matchobj.group(2))
+            if scl_requires == 'a' or (not scl_requires == 'n' and groupdict['dep'] in scl_requires):
+                dep = '%{{?scl_prefix}}{0}'.format(groupdict['dep'])
+            else:
+                dep = groupdict['dep']
 
-            return '{0}{1}'.format(matchobj.group(1), matchobj.group(2))
+            return '{0}{1}{2}{3}'.format(groupdict['prespace'], dep, groupdict['ver'], groupdict['postspace'])
 
-        # the (?:,|s:) deserves an explanation: comma and colon are a separators as in "foo, bar" or "Requires:baz" -
-        # we must however use "s:" instead of just ":", as it would do problems with %{epoch}:baz. Fortunately all the
-        # dependencytags end with s, so we can use "s:".
-        comma_re = re.compile(r'((?:,|s:)\s*)([^\s,]+)')
-        return comma_re.sub(handle_comma, text)
+        dep_re = re.compile(r'(?P<prespace>\s*)(?P<dep>[^\s]+)(?P<ver>\s*[<>=!]+\s*[^\s]+)?(?P<postspace>\s*)')
+        return tag + dep_re.sub(handle_one_dep, deps)
 
     @matches(r'(?<!d)(Requires:\s*)([^[\s]+)') # avoid BuildRequires
     @matches(r'(BuildRequires:\s*)([^\s]+)')
