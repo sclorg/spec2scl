@@ -36,6 +36,20 @@ class TestTransformer(TransformerTestCase):
         self.t = Transformer('', {})
         self.st = SpamTransformer('', {})
 
+    # ========================= tests for methods that don't apply to Transformer subclasses
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('nothing', 'TODO'),
+        ('Name: foo', 'foo'),
+        ('Name: foo', 'foo'),
+        ('Name: %{spam}foo', '%{spam}foo'),
+        ('Name: foo-_%{spam}', 'foo-_%{spam}'),
+    ])
+    def test_get_original_name(self, spec, expected):
+        self.t.original_spec = spec
+        self.t.scl_spec = 'Name: error if taken from here'
+        assert self.t.get_original_name() == expected
+
     @pytest.mark.parametrize(('pattern', 'spec', 'expected'), [
         (re.compile(r'eat spam'), 'eat spam\neat eat spam', ['eat spam\n', 'eat eat spam']),
         (re.compile(r'eat spam'), 'spam eat\nand spam', []),
@@ -45,6 +59,8 @@ class TestTransformer(TransformerTestCase):
     ])
     def test_find_whole_commands(self, pattern, spec, expected):
         assert self.t.find_whole_commands(pattern, spec) == expected
+
+    # ========================= tests for methods that apply to Transformer subclasses
 
     def test_collect_transformer_methods(self):
         one_line, more_lines = self.st.collect_transformer_methods()
