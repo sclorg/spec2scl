@@ -17,6 +17,8 @@ class TestRubyTransformer(TransformerTestCase):
         ('"rubygem install" string should not get modified'),
         ('"rubygem-rspec" string should not get modified'),
         ('"rubygem(rspec)" string should not get modified'),
+        ('#ruby -some params string should not get modified'),
+        ('neither should this ruby string'),
     ])
     def test_ruby_specific_commands_not_matching(self, spec):
         patterns = self.t.handle_ruby_specific_commands.matches
@@ -27,6 +29,7 @@ class TestRubyTransformer(TransformerTestCase):
         ('gem install spam \\\n --more-spam\n', '%{?scl:scl enable %{scl} "}\ngem install spam \\\n --more-spam\n%{?scl:"}\n'),
         ('RUBYOPT="-Ilib:test" rspec spec\n', '%{?scl:scl enable %{scl} - << \EOF}\nRUBYOPT="-Ilib:test" rspec spec\n%{?scl:EOF}\n'),
         ('testrb spam', '%{?scl:scl enable %{scl} "}\ntestrb spam%{?scl:"}\n'),
+        ('ruby -some params', '%{?scl:scl enable %{scl} "}\nruby -some params%{?scl:"}\n'),
     ])
     def test_ruby_specific_commands_matching(self, spec, expected):
         patterns = self.t.handle_ruby_specific_commands.matches
