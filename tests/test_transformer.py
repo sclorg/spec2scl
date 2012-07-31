@@ -1,3 +1,4 @@
+#TODO: use mocking to test functions in isolation
 import itertools
 import re
 
@@ -67,6 +68,17 @@ class TestTransformer(TransformerTestCase):
     ])
     def test_find_whole_commands(self, pattern, spec, expected):
         assert self.t.find_whole_commands(pattern, spec) == expected
+
+    @pytest.mark.parametrize(('command', 'expected'), [
+        ('nope', False),
+        ('yep\\\nyep', False),
+        ('nope"', False),
+        ('nope\'', False),
+        ('yep"\'', True),
+        ('A=a yep"\'', True),
+    ])
+    def test_command_needs_heredoc_for_execution(self, command, expected):
+        assert self.t.command_needs_heredoc_for_execution(command) == expected
 
     # ========================= tests for methods that apply to Transformer subclasses
 
