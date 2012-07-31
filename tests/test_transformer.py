@@ -18,18 +18,26 @@ class SpamTransformer(Transformer):
 
     @matches(r'spam')
     def handle_spam(self, pattern, text):
-        return 'handled spam'
+        return text.replace('spam', 'handled spam', 1)
 
     @matches(r'spam\nspam', one_line = False)
     def handle_global_spam(self, pattern, text):
-        return 'handled global\nspam'
+        return text.replace('spam\nspam', 'handled global\nspam', 1)
+
+    @matches(r'foo')
+    def handle_foo(self, pattern, text):
+        return text.replace('foo', 'handled foo', 1)
+
+    @matches(r'foo\nfoo', one_line = False)
+    def handle_global_foo(self, pattern, text):
+        return text.replace('foo\nfoo', 'handled global\nfoo', 1)
 
     # test helper attributes/methods
     # it may be needed to alter these when something is changed in this class
-    _transformers_one_line = set(['handle_spam'])
-    _transformers_more_lines = set(['handle_global_spam'])
-    _patterns_one_line = set([r'spam'])
-    _patterns_more_lines = set([r'spam\nspam'])
+    _transformers_one_line = set(['handle_spam', 'handle_foo'])
+    _transformers_more_lines = set(['handle_global_spam', 'handle_global_foo'])
+    _patterns_one_line = set([r'spam', r'foo'])
+    _patterns_more_lines = set([r'spam\nspam', r'foo\nfoo'])
 
 class TestTransformer(TransformerTestCase):
     def setup_method(self, method):
@@ -71,3 +79,26 @@ class TestTransformer(TransformerTestCase):
         # and then map them to their patterns
         assert set(map(lambda x: x.pattern, itertools.chain(*one_line.values()))) == self.st._patterns_one_line
         assert set(map(lambda x: x.pattern, itertools.chain(*more_lines.values()))) == self.st._patterns_more_lines
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('nothing to do', 'nothing to do'),
+        ('foo', 'handled foo'),
+        ('spam', 'handled spam'),
+        ('foo spam', 'handled foo handled spam'),
+    ])
+    def test_apply_one_line_transformers(self, spec, expected):
+        self.st.original_spec = spec
+        self.st.scl_spec = spec
+        assert self.st.apply_one_line_transformers() == expected
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('nothing to do', 'nothing to do'),
+        ('foo\nfoo', 'handled global\nfoo'),
+        ('spam\nspam', 'handled global\nspam'),
+        ('spam\nspam\nfoo\nfoo', 'handled global\nspam\nhandled global\nfoo'),
+        ('spam\nxspam', 'spam\nxspam'),
+    ])
+    def test_apply_one_line_transformers(self, spec, expected):
+        self.st.original_spec = spec
+        self.st.scl_spec = spec
+        assert self.st.apply_more_line_transformers() == expected
