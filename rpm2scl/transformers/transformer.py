@@ -83,7 +83,10 @@ class Transformer(object):
             append = False
             whole_command = []
             # now use it to get the whole command
-            index = text.find(matched)
+            index = match.start(0)
+            previous_newline = text.rfind('\n', 0, index)
+            # don't start from the matched pattern, but from the beginning of its line
+            text = text[previous_newline if previous_newline != -1 else 0:]
             for line in text.splitlines(True):
                 if line.find(matched) != -1:
                     append = True
@@ -92,9 +95,10 @@ class Transformer(object):
                 if append and not line.rstrip().endswith('\\'):
                     break # sorry :)
 
-            text = text[index + 1:] # so that we don't find it again
+            command = ''.join(whole_command)
+            text = text[len(command):] # so that we don't find it again
 
-            commands.append(''.join(whole_command))
+            commands.append(command)
 
         return commands
 
