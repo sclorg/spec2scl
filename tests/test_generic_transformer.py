@@ -38,6 +38,10 @@ class TestGenericTransformer(TransformerTestCase):
         ('Requires: spam > 1, spam < 3', ['eggs'], 'Requires: spam > 1, spam < 3'),
         ('Requires: spam > 1, spam < 3', ['spam'], 'Requires: %{?scl_prefix}spam > 1, %{?scl_prefix}spam < 3'),
         ('BuildRequires: python(spam)', ['python(spam)', 'spam'], 'BuildRequires: %{?scl_prefix}python(spam)'),
+        ('Requires: perl(:MODULE_COMPAT_%(eval "`perl -V:version`"; echo $version))',
+            'a', 'Requires: %{?scl_prefix}perl(:MODULE_COMPAT_%(eval "`perl -V:version`"; echo $version))'),
+        # this test case will fail, we would need something more powerful than regexps to parse nested braces
+        #('Requires: spam(foo()) = 1 bar(foo()) = 2', 'a', 'Requires: %{?scl_prefix}spam(foo()) = 1 %{?scl_prefix}bar(foo()) = 2'),
     ])
     def test_handle_dependency_tag_modified_scl_requires(self, spec, scl_requires, expected):
         patterns = self.t.handle_dependency_tag_modified_by_list.matches

@@ -35,7 +35,7 @@ class GenericTransformer(Transformer):
 
             return '{0}{1}{2}{3}'.format(groupdict['prespace'], dep, groupdict['ver'], groupdict['postspace'])
 
-        dep_re = re.compile(r'(?P<prespace>\s*)(?P<dep>[^\s]+)(?P<ver>\s*[<>=!]+\s*[^\s]+)?(?P<postspace>\s*)')
+        dep_re = re.compile(r'(?P<prespace>\s*)(?P<dep>([^\s]+(.+\))?))(?P<ver>\s*[<>=!]+\s*[^\s]+)?(?P<postspace>\s*)')
         return tag + dep_re.sub(handle_one_dep, deps)
 
     @matches(r'(?<!d)(Requires:\s*)([^[\s]+)') # avoid BuildRequires
