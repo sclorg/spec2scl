@@ -1,6 +1,6 @@
 import pytest
 
-from rpm2scl.transformers.generic import GenericTransformer
+from spec2scl.transformers.generic import GenericTransformer
 
 from transformer_test_case import TransformerTestCase
 

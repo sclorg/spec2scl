@@ -6,6 +6,6 @@
 *~
 build/
 dist/
-rpm2scl.egg-info
+spec2scl.egg-info
 MANIFEST
 mybin.py

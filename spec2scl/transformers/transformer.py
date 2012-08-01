@@ -52,6 +52,7 @@ class Transformer(object):
         return self.scl_spec
 
     def _transform(self):
+        # TODO: probably pass self.scl_spec as argument to these, to make things more consistent and better testable
         self.scl_spec = self.apply_one_line_transformers()
         self.scl_spec = self.apply_more_line_transformers()
 

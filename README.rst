@@ -1,12 +1,12 @@
-=======
-rpm2scl
-=======
+========
+spec2scl
+========
 
-rpm2scl is a tool to convert RPM specfiles to SCL-style specfiles.
+spec2scl is a tool to convert RPM specfiles to SCL-style specfiles.
 
-Usage (print this by running rpm2scl -h)::
+Usage (print this by running spec2scl -h)::
 
-   usage: rpm2scl [-h] [-i] [-l SCL_CONTENTS_LIST]
+   usage: spec2scl [-h] [-i] [-l SCL_CONTENTS_LIST]
                   SPECFILE_PATH [SPECFILE_PATH ...]
 
    Convert RPM specfile to be SCL ready.
@@ -23,4 +23,4 @@ Usage (print this by running rpm2scl -h)::
                            List of the packages/provides, that will be in the SCL
                            (to convert Requires/BuildRequires properly).
 
-rpm2scl is licensed under MIT license.
+spec2scl is licensed under MIT license.

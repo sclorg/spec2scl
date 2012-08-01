@@ -1,6 +1,6 @@
 import pytest
 
-from rpm2scl.transformers.ruby import RubyTransformer
+from spec2scl.transformers.ruby import RubyTransformer
 
 from transformer_test_case import TransformerTestCase
 

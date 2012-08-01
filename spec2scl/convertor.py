@@ -1,5 +1,5 @@
-from rpm2scl.transformers.transformer import Transformer
-from rpm2scl.settings import *
+from spec2scl.transformers.transformer import Transformer
+from spec2scl.settings import *
 
 class Convertor(object):
     def __init__(self, spec, options = None):

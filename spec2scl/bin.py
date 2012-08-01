@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 
-from rpm2scl.convertor import Convertor
+from spec2scl.convertor import Convertor
 
 def handle_scl_requires(args_requires, args_list_file):
     scl_requires = None

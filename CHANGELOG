@@ -1,3 +1,9 @@
+- Renamed from rpm2scl to spec2scl.
+- Add Perl specific transformers.
+- Fix finding of whole commands.
+- Improve handling of multiline commands.
+- Improve Ruby transformer to handle "ruby" execution (still needs some attention, though).
+- Improved the way to find out whether command needs heredoc for execution.
 - Insert {?scl_prefix} even after dependencies separated by just spaces, not commas.
 - Fix the bad inserting of %{?scl_prefix} after %{epoch}:
 
