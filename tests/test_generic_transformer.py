@@ -93,3 +93,11 @@ class TestGenericTransformer(TransformerTestCase):
     ])
     def test_handle_name_macro(self, spec, expected):
         assert self.t.handle_name_macro(self.t.handle_name_macro.matches[0], spec) == expected
+
+    @pytest.mark.parametrize(('spec', 'meta_runtime_dep', 'expected'), [
+        ('Requires:', False, 'Requires:'),
+        ('Requires:', True, '%{?scl:Requires: %{scl}-runtime}\nRequires:'),
+    ])
+    def test_handle_meta_runtime_dep(self, spec, meta_runtime_dep, expected):
+        self.t.options['meta_runtime_dep'] = meta_runtime_dep
+        assert self.t.handle_meta_runtime_dep(None, spec) == expected

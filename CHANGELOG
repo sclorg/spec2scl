@@ -1,3 +1,4 @@
+- Added switch to add the %{scl}-runtime dependency.
 - Renamed from rpm2scl to spec2scl.
 - Add Perl specific transformers.
 - Fix finding of whole commands.

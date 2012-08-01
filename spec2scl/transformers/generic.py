@@ -64,3 +64,15 @@ class GenericTransformer(Transformer):
     @matches(r'%{name}')
     def handle_name_macro(self, pattern, text):
         return pattern.sub(r'%{pkg_name}', text)
+
+    @matches(r'.*', one_line = False) # bit complicated to put it at a sane place, use whole spec
+    def handle_meta_runtime_dep(self, pattern, text):
+        if not self.options['meta_runtime_dep']:
+            return text
+        place_before_re = [re.compile(i, re.MULTILINE) for i in ['(^BuildRequires)', '(^Requires)', '(^Name)']]
+
+        for pb in place_before_re:
+            match = pb.search(text)
+            if match:
+                index = match.start(0)
+                return '{0}%{{?scl:Requires: %{{scl}}-runtime}}\n{1}'.format(text[:index], text[index:])

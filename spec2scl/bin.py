@@ -40,6 +40,11 @@ def main():
                         help = 'List of the packages/provides, that will be in the SCL (to convert Requires/BuildRequires properly).',
                         metavar = 'SCL_CONTENTS_LIST'
                        )
+    parser.add_argument('-m', '--meta-runtime-dep',
+                        required = False,
+                        help = 'If used, runtime dependency on the %{scl}-runtime package will be added. The dependency is not added by default.',
+                        action = 'store_true'
+                       )
 
     args = parser.parse_args()
 
@@ -64,7 +69,7 @@ def main():
             print('Could not open file: {0}'.format(e))
             sys.exit(1)
 
-        convertor = Convertor(spec = spec, options = {'scl_requires': scl_requires})
+        convertor = Convertor(spec = spec, options = {'scl_requires': scl_requires, 'meta_runtime_dep': args.meta_runtime_dep})
         converted.append(convertor.convert())
 
     for i, conv in enumerate(converted):
