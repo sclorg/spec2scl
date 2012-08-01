@@ -42,7 +42,7 @@ def main():
                        )
     parser.add_argument('-m', '--meta-runtime-dep',
                         required = False,
-                        help = 'If used, runtime dependency on the %{scl}-runtime package will be added. The dependency is not added by default.',
+                        help = 'If used, runtime dependency on the scl runtime package will be added. The dependency is not added by default.',
                         action = 'store_true'
                        )
 
