@@ -1,3 +1,5 @@
+- Add argparse to install_requires for Python < 2.7 (thanks franz for bug report).
+
 0.3.0
 - Handle virtual dependencies with spaces in braces, like "Requires: foo(`do something`)".
 - Added switch to add the %{scl}-runtime dependency.

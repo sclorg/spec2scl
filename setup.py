@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+
 from spec2scl.version import version
 
 try:
@@ -8,6 +10,10 @@ try:
 except:
     from distutils.core import setup, find_packages
 
+if sys.version_info < (2, 7):
+    install_requires = ['argparse']
+else:
+    install_requires = []
 
 description = """spec2scl is a tool to convert RPM specfiles to SCL-style specfiles."""
 
@@ -25,6 +31,7 @@ setup(
     setup_requires = ['pytest',
                       'flexmock >= 0.9.3'
                      ],
+    install_requires = install_requires,
     entry_points={'console_scripts':['spec2scl = spec2scl.bin:main']},
     classifiers = ['Development Status :: 4 - Beta',
                    'Environment :: Console',
