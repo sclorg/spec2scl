@@ -111,7 +111,7 @@ class TestTransformer(TransformerTestCase):
         ('spam\nspam\nfoo\nfoo', 'handled global\nspam\nhandled global\nfoo'),
         ('spam\nxspam', 'spam\nxspam'),
     ])
-    def test_apply_one_line_transformers(self, spec, expected):
+    def test_apply_more_line_transformers(self, spec, expected):
         self.st.original_spec = spec
         self.st.scl_spec = spec
         assert self.st.apply_more_line_transformers() == expected
