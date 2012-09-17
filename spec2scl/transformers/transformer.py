@@ -119,6 +119,9 @@ class Transformer(object):
 
     def sclize_all_commands(self, pattern, text):
         commands = self.find_whole_commands(pattern, text)
+        # if there are multiple same commands, we only want to replace each once => take only unique values by list(set())
+        commands = list(set(commands))
+
         for command in commands:
             text = text.replace(command, self.sclize_one_command(command))
 

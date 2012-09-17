@@ -33,12 +33,16 @@ class SpamTransformer(Transformer):
     def handle_global_foo(self, pattern, text):
         return text.replace('foo\nfoo', 'handled global\nfoo', 1)
 
+    @matches(r'looney', one_line = False)
+    def handle_simple_global_looney(self, pattern, text):
+        return self.sclize_all_commands(pattern, text)
+
     # test helper attributes/methods
     # it may be needed to alter these when something is changed in this class
     _transformers_one_line = set(['handle_spam', 'handle_foo'])
-    _transformers_more_lines = set(['handle_global_spam', 'handle_global_foo'])
+    _transformers_more_lines = set(['handle_global_spam', 'handle_global_foo', 'handle_simple_global_looney'])
     _patterns_one_line = set([r'spam', r'foo'])
-    _patterns_more_lines = set([r'spam\nspam', r'foo\nfoo'])
+    _patterns_more_lines = set([r'spam\nspam', r'foo\nfoo', r'looney'])
 
 class TestTransformer(TransformerTestCase):
     def setup_method(self, method):
@@ -110,6 +114,7 @@ class TestTransformer(TransformerTestCase):
         ('spam\nspam', 'handled global\nspam'),
         ('spam\nspam\nfoo\nfoo', 'handled global\nspam\nhandled global\nfoo'),
         ('spam\nxspam', 'spam\nxspam'),
+        ('looney\nlooney\n', '%{?scl:scl enable %{scl} "}\nlooney\n%{?scl:"}\n%{?scl:scl enable %{scl} "}\nlooney\n%{?scl:"}\n'),
     ])
     def test_apply_more_line_transformers(self, spec, expected):
         self.st.original_spec = spec
