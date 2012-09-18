@@ -1,3 +1,4 @@
+- Fix issue, where having more same commands resulted in having multiple "scl enable" for each.
 - Add argparse to install_requires for Python < 2.7 (thanks franz for bug report).
 
 0.3.0
