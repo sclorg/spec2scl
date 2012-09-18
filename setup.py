@@ -27,7 +27,7 @@ setup(
     author_email = 'bkabrda@redhat.com',
     url = 'https://bitbucket.org/bkabrda/spec2scl/',
     license = 'MIT',
-    packages = find_packages(),
+    packages = find_packages(exclude = ['tests']),
     setup_requires = ['pytest',
                       'flexmock >= 0.9.3'
                      ] + install_requires,
