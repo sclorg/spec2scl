@@ -30,7 +30,7 @@ setup(
     packages = find_packages(),
     setup_requires = ['pytest',
                       'flexmock >= 0.9.3'
-                     ],
+                     ] + install_requires,
     install_requires = install_requires,
     entry_points={'console_scripts':['spec2scl = spec2scl.bin:main']},
     classifiers = ['Development Status :: 4 - Beta',
