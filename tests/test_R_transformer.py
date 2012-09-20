@@ -9,7 +9,7 @@ class TestRTransformer(TransformerTestCase):
         self.t = RTransformer('', {})
 
     @pytest.mark.parametrize(('spec'), [
-        ('"%{bindir}/R foo" stays'),
+        ('"%{__bindir}/R foo" stays'),
     ])
     def test_R_specific_commands_not_matching(self, spec):
         patterns = self.t.handle_R_specific_commands.matches
@@ -17,7 +17,7 @@ class TestRTransformer(TransformerTestCase):
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('R CMD foo bar', '%{?scl:scl enable %{scl} "}\nR CMD foo bar%{?scl:"}\n'),
-        ('%{bindir}/R CMD foo bar\n', '%{?scl:scl enable %{scl} "}\n%{bindir}/R CMD foo bar\n%{?scl:"}\n'),
+        ('%{__bindir}/R CMD foo bar\n', '%{?scl:scl enable %{scl} "}\n%{__bindir}/R CMD foo bar\n%{?scl:"}\n'),
     ])
     def test_R_specific_commands_matching(self, spec, expected):
         patterns = self.t.handle_R_specific_commands.matches

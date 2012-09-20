@@ -101,9 +101,16 @@ class TestTransformer(TransformerTestCase):
         ('nothing to do', 'nothing to do'),
         ('foo', 'handled foo'),
         ('spam', 'handled spam'),
-        ('foo spam', 'handled foo handled spam'),
     ])
     def test_apply_one_line_transformers(self, spec, expected):
+        self.st.original_spec = spec
+        self.st.scl_spec = spec
+        assert self.st.apply_one_line_transformers() == expected
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('foo spam', 'handled foo handled spam'),
+    ])
+    def test_multiple_one_line_transformers_apply_on_one_line(self, spec, expected):
         self.st.original_spec = spec
         self.st.scl_spec = spec
         assert self.st.apply_one_line_transformers() == expected
@@ -114,9 +121,16 @@ class TestTransformer(TransformerTestCase):
         ('spam\nspam', 'handled global\nspam'),
         ('spam\nspam\nfoo\nfoo', 'handled global\nspam\nhandled global\nfoo'),
         ('spam\nxspam', 'spam\nxspam'),
-        ('looney\nlooney\n', '%{?scl:scl enable %{scl} "}\nlooney\n%{?scl:"}\n%{?scl:scl enable %{scl} "}\nlooney\n%{?scl:"}\n'),
     ])
     def test_apply_more_line_transformers(self, spec, expected):
+        self.st.original_spec = spec
+        self.st.scl_spec = spec
+        assert self.st.apply_more_line_transformers() == expected
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('looney\nlooney\n', '%{?scl:scl enable %{scl} "}\nlooney\n%{?scl:"}\n%{?scl:scl enable %{scl} "}\nlooney\n%{?scl:"}\n'),
+    ])
+    def test_transformers_dont_apply_scl_enable_twice(self, spec, expected):
         self.st.original_spec = spec
         self.st.scl_spec = spec
         assert self.st.apply_more_line_transformers() == expected
