@@ -4,6 +4,11 @@ spec2scl
 
 spec2scl is a tool to convert RPM specfiles to SCL-style specfiles.
 
+To get more info about Software Collections, see:
+
+- https://fedorahosted.org/SoftwareCollections/
+- http://docs.fedoraproject.org/en-US/Fedora_Contributor_Documentation/1/html/Software_Collections_Guide
+
 Usage (print this by running spec2scl -h)::
 
    usage: spec2scl [-h] [-i] [-r CONVERT_REQUIRES] [-l SCL_CONTENTS_LIST] [-m]
