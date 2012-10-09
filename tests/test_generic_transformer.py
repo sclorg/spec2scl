@@ -119,3 +119,14 @@ class TestGenericTransformer(TransformerTestCase):
     def test_handle_meta_runtime_dep(self, spec, meta_runtime_dep, expected):
         self.t.options['meta_runtime_dep'] = meta_runtime_dep
         assert self.t.handle_meta_runtime_dep(None, spec) == expected
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('configure\n', '%{?scl:scl enable %{scl} "}\nconfigure\n%{?scl:"}\n'),
+        ('%configure ', '%{?scl:scl enable %{scl} "}\n%configure %{?scl:"}\n'),
+        ('%configure --foo \\n --bar', '%{?scl:scl enable %{scl} "}\n%configure --foo \\n --bar%{?scl:"}\n'),
+        ('make ', '%{?scl:scl enable %{scl} "}\nmake %{?scl:"}\n'),
+        ('make foo\n', '%{?scl:scl enable %{scl} "}\nmake foo\n%{?scl:"}\n'),
+    ])
+    def test_handle_name_macro(self, spec, expected):
+        patterns = self.t.handle_configure_make.matches
+        assert self.t.handle_configure_make(self.get_pattern_for_spec(patterns, spec), spec) == expected

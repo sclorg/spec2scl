@@ -79,3 +79,8 @@ class GenericTransformer(Transformer):
             if match:
                 index = match.start(0)
                 return '{0}%{{?scl:Requires: %{{scl}}-runtime}}\n{1}'.format(text[:index], text[index:])
+
+    @matches(r'^%?configure\s+', one_line = False)
+    @matches(r'^make\s+', one_line = False) # make is a common word, so don't take it too seriously
+    def handle_configure_make(self, pattern, text):
+        return self.sclize_all_commands(pattern, text)
