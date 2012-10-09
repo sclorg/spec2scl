@@ -29,7 +29,10 @@ class GenericTransformer(Transformer):
                 scl_requires = 'a' # convert all by default
 
             if scl_requires == 'a' or (not scl_requires == 'n' and groupdict['dep'] in scl_requires):
-                dep = '%{{?scl_prefix}}{0}'.format(groupdict['dep'])
+                if groupdict['dep'].startswith('/'):
+                    dep = '%{{?_scl_root}}{0}'.format(groupdict['dep'])
+                else:
+                    dep = '%{{?scl_prefix}}{0}'.format(groupdict['dep'])
             else:
                 dep = groupdict['dep']
 

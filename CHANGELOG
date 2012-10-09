@@ -1,3 +1,4 @@
+- Recognize and transform dependencies on paths (e.g. Requires: /usr/bin/foo).
 - Add PHP specific transformer.
 
 0.3.1

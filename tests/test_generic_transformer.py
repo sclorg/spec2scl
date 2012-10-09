@@ -41,6 +41,14 @@ class TestGenericTransformer(TransformerTestCase):
         patterns = self.t.handle_dependency_tag.matches
         assert self.t.handle_dependency_tag(self.get_pattern_for_spec(patterns, spec), spec) == expected
 
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('Requires: /foo/spam', 'Requires: %{?_scl_root}/foo/spam'),
+        ('Requires: spam /foo/eggs', 'Requires: %{?scl_prefix}spam %{?_scl_root}/foo/eggs'),
+    ])
+    def test_handle_dependency_tag_with_path(self, spec, expected):
+        patterns = self.t.handle_dependency_tag.matches
+        assert self.t.handle_dependency_tag(self.get_pattern_for_spec(patterns, spec), spec) == expected
+
     @pytest.mark.parametrize(('spec', 'scl_requires', 'expected'), [
         ('Requires: spam = %{epoch}:%{version}-%{release}', 'a', 'Requires: %{?scl_prefix}spam = %{epoch}:%{version}-%{release}'),
         ('Requires: spam > 1, spam < 3', 'a', 'Requires: %{?scl_prefix}spam > 1, %{?scl_prefix}spam < 3'),
