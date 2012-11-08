@@ -1,3 +1,4 @@
+0.3.2
 - %configure and make are general commands, so sclize them
 - Recognize and transform dependencies on paths (e.g. Requires: /usr/bin/foo).
 - Add PHP specific transformer.
