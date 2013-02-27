@@ -26,6 +26,7 @@ class TestRubyTransformer(TransformerTestCase):
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('gem install spam', '%{?scl:scl enable %{scl} "}\ngem install spam%{?scl:"}\n'),
+        ('gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec', '%{?scl:scl enable %{scl} "}\ngem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec%{?scl:"}\n'),
         ('gem install spam \\\n --more-spam\n', '%{?scl:scl enable %{scl} "}\ngem install spam \\\n --more-spam\n%{?scl:"}\n'),
         ('RUBYOPT="-Ilib:test" rspec spec\n', '%{?scl:scl enable %{scl} - << \EOF}\nRUBYOPT="-Ilib:test" rspec spec\n%{?scl:EOF}\n'),
         ('testrb spam', '%{?scl:scl enable %{scl} "}\ntestrb spam%{?scl:"}\n'),
