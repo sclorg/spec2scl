@@ -17,6 +17,7 @@ class TestRubyTransformer(TransformerTestCase):
         ('"rubygem install" string should not get modified'),
         ('"rubygem-rspec" string should not get modified'),
         ('"rubygem(rspec)" string should not get modified'),
+        ('"%exclude %{gem_instdir}/.rspec " string should not get modified (the empty space is important)'),
         ('#ruby -some params string should not get modified'),
         ('neither should this ruby string'),
     ])
