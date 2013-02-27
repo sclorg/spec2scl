@@ -1,3 +1,5 @@
+- Various fixes for Ruby transformer (thanks Mirek Suchy for reporting).
+
 0.3.4
 - Fixed inifinte loop with %{__perl} macro (thanks Andrew Ford for reporting).
 
