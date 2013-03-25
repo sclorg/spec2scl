@@ -2,7 +2,7 @@ import pytest
 
 from spec2scl.transformers.R import RTransformer
 
-from transformer_test_case import TransformerTestCase
+from tests.transformer_test_case import TransformerTestCase
 
 class TestRTransformer(TransformerTestCase):
     def setup_method(self, method):

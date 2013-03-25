@@ -2,7 +2,7 @@ import pytest
 
 from spec2scl.transformers.perl import PerlTransformer
 
-from transformer_test_case import TransformerTestCase
+from tests.transformer_test_case import TransformerTestCase
 
 class TestPerlTransformer(TransformerTestCase):
     def setup_method(self, method):

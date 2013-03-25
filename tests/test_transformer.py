@@ -7,7 +7,7 @@ import pytest
 from spec2scl.decorators import matches
 from spec2scl.transformers.transformer import Transformer
 
-from transformer_test_case import TransformerTestCase
+from tests.transformer_test_case import TransformerTestCase
 
 class SpamTransformer(Transformer):
     """This is a testing class to test various Transformer methods"""
