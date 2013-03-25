@@ -37,16 +37,16 @@ class SpamTransformer(Transformer):
     def handle_simple_global_looney(self, pattern, text):
         return self.sclize_all_commands(pattern, text)
 
-    @matches(r'spam\s+', one_line=False)
+    @matches(r'ham\s+', one_line=False)
     def handle_spam_and_space(self, pattern, text):
         return self.sclize_all_commands(pattern, text)
 
     # test helper attributes/methods
     # it may be needed to alter these when something is changed in this class
     _transformers_one_line = set(['handle_spam', 'handle_foo'])
-    _transformers_more_lines = set(['handle_global_spam', 'handle_global_foo', 'handle_simple_global_looney'])
+    _transformers_more_lines = set(['handle_global_spam', 'handle_global_foo', 'handle_simple_global_looney', 'handle_spam_and_space'])
     _patterns_one_line = set([r'spam', r'foo'])
-    _patterns_more_lines = set([r'spam\nspam', r'foo\nfoo', r'looney'])
+    _patterns_more_lines = set([r'spam\nspam', r'foo\nfoo', r'looney', r'ham\s+'])
 
 class TestTransformer(TransformerTestCase):
     def setup_method(self, method):
@@ -143,7 +143,7 @@ class TestTransformer(TransformerTestCase):
         # if one line pattern ends with \s+, then it might match multiple \n
         # therefore it won't get found in lines.split in find_whole_commands
         # (well, it didn't, now it works)
-        self.st.original_spec = 'spam\n\n'
-        self.st.scl_spec = 'spam\n\n'
+        self.st.original_spec = 'ham\n\n'
+        self.st.scl_spec = 'ham\n\n'
         self.st.apply_more_line_transformers()
         assert True # if it didn't end in endless loop, we're fine
