@@ -80,6 +80,11 @@ class Transformer(object):
             if not match:
                 break
             matched = match.group(0)
+            if matched.endswith('\n'):
+                # if matched ends with newline, then we might have got e.g.
+                # 'make\n\n', but that will not work because we are splitting
+                # lines below, so we can only match one newline at the end
+                matched = matched.rstrip('\n') + '\n'
 
             append = False
             whole_command = []

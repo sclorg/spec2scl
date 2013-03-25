@@ -37,6 +37,10 @@ class SpamTransformer(Transformer):
     def handle_simple_global_looney(self, pattern, text):
         return self.sclize_all_commands(pattern, text)
 
+    @matches(r'spam\s+', one_line=False)
+    def handle_spam_and_space(self, pattern, text):
+        return self.sclize_all_commands(pattern, text)
+
     # test helper attributes/methods
     # it may be needed to alter these when something is changed in this class
     _transformers_one_line = set(['handle_spam', 'handle_foo'])
@@ -134,3 +138,12 @@ class TestTransformer(TransformerTestCase):
         self.st.original_spec = spec
         self.st.scl_spec = spec
         assert self.st.apply_more_line_transformers() == expected
+
+    def test_one_line_pattern_endswith_arbitrary_space_doesnt_hang(self):
+        # if one line pattern ends with \s+, then it might match multiple \n
+        # therefore it won't get found in lines.split in find_whole_commands
+        # (well, it didn't, now it works)
+        self.st.original_spec = 'spam\n\n'
+        self.st.scl_spec = 'spam\n\n'
+        self.st.apply_more_line_transformers()
+        assert True # if it didn't end in endless loop, we're fine
