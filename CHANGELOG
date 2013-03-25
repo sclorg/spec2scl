@@ -1,3 +1,6 @@
+- spec2scl now runs on Python 3.
+- Killed endless loop on generic transformer (thanks Mirek Suchy for reporting).
+- Commented commands now don't get sclized (thanks Mirek Suchy for reporting).
 - Various fixes for Ruby transformer (thanks Mirek Suchy for reporting).
 
 0.3.4

@@ -20,7 +20,7 @@ description = """spec2scl is a tool to convert RPM specfiles to SCL-style specfi
 setup(
     name = 'spec2scl',
     version = version,
-    description = "Convert RPM specfiles to be SCL ready",
+    description = "Convert RPM specfiles to SCL-style.",
     long_description = description,
     keywords = 'rpm, spec, specfile, convert, scl, dsc',
     author = 'Bohuslav "Slavek" Kabrda',
