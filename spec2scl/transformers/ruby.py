@@ -2,8 +2,8 @@ from spec2scl.decorators import matches
 from spec2scl.transformer import Transformer
 
 class RubyTransformer(Transformer):
-    def __init__(self, spec, options = None):
-        super(RubyTransformer, self).__init__(spec, options)
+    def __init__(self, original_spec, spec, options = None):
+            super(RubyTransformer, self).__init__(original_spec, spec, options)
 
     @matches(r'(?<!y)gem\s+(?:(?:install)|(?:unpack)|(?:build)|(?:spec))', one_line = False) # not to match string like "rubygem install"
     @matches(r'^ruby\s+', one_line = False) # carefully here, "ruby" will occur often in the specfile

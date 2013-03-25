@@ -1,17 +1,19 @@
 import re
+import settings
 
-def matches(pattern, one_line = True, flags = 0):
-    if one_line:
-        flags = 0
-    else:
+def matches(pattern, one_line=True, sections=settings.SPECFILE_SECTIONS, flags=0):
+    if not one_line:
         flags = re.MULTILINE
 
     def inner(func):
-        func.one_line = one_line
         if not hasattr(func, 'matches'):
+            func.one_line = [one_line]
             func.matches = [re.compile(pattern, flags)]
+            func.sections = [sections]
         else:
+            func.one_line.append(one_line)
             func.matches.append(re.compile(pattern, flags))
+            func.sections.append(sections)
         return func
 
     return inner

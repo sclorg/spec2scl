@@ -1,4 +1,5 @@
 from spec2scl.transformer import Transformer
+from spec2scl.transformers import *
 from spec2scl.settings import *
 from spec2scl.specfile import Specfile
 

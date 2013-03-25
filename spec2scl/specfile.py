@@ -29,3 +29,6 @@ class Specfile(object):
                     sections.append((header.pattern[1:], curr_section))
 
         return sections
+
+    def __str__(self):
+        return '\n\n'.join(zip(*self.sections)[1])

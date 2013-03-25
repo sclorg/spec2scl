@@ -1,62 +1,62 @@
 import re
 
 class Transformer(object):
-    def __init__(self, spec, options = None):
-        self.original_spec = spec
-        self.scl_spec = spec
+    def __init__(self, original_spec, spec, options = None):
+        self.original_spec = original_spec
+        self.spec = spec
         self.options = options or {}
-        self.one_line_transformers, self.more_lines_transformers = self.collect_transformer_methods()
+        self.subtransformers = map(lambda x: x(self.original_spec, self.spec, self.options),
+                                   type(self).__subclasses__())
+        self.transformer_methods = self.collect_transformer_methods()
 
     def collect_transformer_methods(self):
-        one_line = {}
-        more_lines = {}
+        transformers = []
 
-        for attr in self.__class__.__dict__:
-            try:
-                matches = getattr(getattr(self, attr), 'matches')
-                if getattr(getattr(self, attr), 'one_line'):
-                    one_line[getattr(self, attr)] = matches
-                else:
-                    more_lines[getattr(self, attr)] = matches
-            except: # doesn't have matches attribute
-                pass
+        for v in vars(type(self)).values():
+            if hasattr(v, 'matches'):
+                for i in range(len(v.matches)):
+                    transformers.append((getattr(self, v.__name__), v.matches[i], v.one_line[i], v.sections[i]))
 
-        return (one_line, more_lines)
+        return transformers
 
-    def apply_one_line_transformers(self):
-        split_spec = self.scl_spec.splitlines()
-        for index, line in enumerate(split_spec):
-            for one_line_transformer, patterns in self.one_line_transformers.items():
-                for pattern in patterns:
-                    if pattern.search(line):
-                        # let all the patterns modify the line
-                        line = one_line_transformer(pattern, line)
-            split_spec[index] = line
+    def transform_one_liners(self, section_name, section_text):
+        one_liners = filter(lambda x: x[2], self.transformer_methods)
+        split_section = section_text.splitlines()
+        for index, line in enumerate(split_section):
+            for func, pattern, _, sections in one_liners:
+                if pattern.search(line):
+                    print pattern.pattern
+                    print section_name in sections
+                if section_name in sections and pattern.search(line):
+                    # let all the patterns modify the line
+                    line = func(pattern, line)
+                split_section[index] = line
 
-        return '\n'.join(split_spec)
+        return '\n'.join(split_section)
 
-    def apply_more_line_transformers(self):
-        temp_spec = self.scl_spec
-        for more_lines_transformer, patterns in self.more_lines_transformers.items():
-            for pattern in patterns:
-                if pattern.search(temp_spec):
-                    temp_spec = more_lines_transformer(pattern, temp_spec)
+    def transform_more_liners(self, section_name, section_text):
+        more_liners = filter(lambda x: not x[2], self.transformer_methods)
+        for func, pattern, _, sections in more_liners:
+            if section_name in sections and pattern.search(section_text):
+                section_text = func(pattern, section_text)
 
-        return temp_spec
+        return section_text
 
     def transform(self):
-        for subcls in type(self).__subclasses__():
-            obj = subcls(self.scl_spec, self.options)
-            self.scl_spec = obj._transform()
+        for subtrans in self.subtransformers:
+            subtrans._transform()
 
-        return self.scl_spec
+        return self.spec
 
     def _transform(self):
-        # TODO: probably pass self.scl_spec as argument to these, to make things more consistent and better testable
-        self.scl_spec = self.apply_one_line_transformers()
-        self.scl_spec = self.apply_more_line_transformers()
+        for i, section in enumerate(self.spec.sections):
+            self.spec.sections[i] = (section[0], self._transform_section(section[0], section[1]))
 
-        return self.scl_spec
+    def _transform_section(self, section_name, section_text):
+        section_text = self.transform_one_liners(section_name, section_text)
+        section_text = self.transform_more_liners(section_name, section_text)
+
+        return section_text
 
     # these methods are helpers for the actual transformations
     def get_original_name(self):

@@ -2,8 +2,8 @@ from spec2scl.decorators import matches
 from spec2scl.transformer import Transformer
 
 class PythonTransformer(Transformer):
-    def __init__(self, spec, options = None):
-        super(PythonTransformer, self).__init__(spec, options)
+    def __init__(self, original_spec, spec, options = None):
+        super(PythonTransformer, self).__init__(original_spec, spec, options)
 
     @matches(r'%{__python\d*}\s+', one_line = False)
     @matches(r'nosetests', one_line = False)

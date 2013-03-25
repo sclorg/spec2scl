@@ -2,8 +2,8 @@ from spec2scl.decorators import matches
 from spec2scl.transformer import Transformer
 
 class PerlTransformer(Transformer):
-    def __init__(self, spec, options = None):
-        super(PerlTransformer, self).__init__(spec, options)
+    def __init__(self, original_spec, spec, options = None):
+        super(PerlTransformer, self).__init__(original_spec, spec, options)
 
     @matches(r'^[^:\n]*%{__perl}\s+', one_line = False) # if there is a colon, it is probably a dependency, don't match that
     @matches(r'^perl\s+', one_line = False) # carefully here, "perl" will occur often in the specfile

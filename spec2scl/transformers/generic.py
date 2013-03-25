@@ -4,10 +4,10 @@ from spec2scl.decorators import matches
 from spec2scl.transformer import Transformer
 
 class GenericTransformer(Transformer):
-    def __init__(self, spec, options = None):
-        super(GenericTransformer, self).__init__(spec, options)
+    def __init__(self, original_spec, spec, options = None):
+        super(GenericTransformer, self).__init__(original_spec, spec, options)
 
-    @matches(r'^', one_line = False)
+    @matches(r'^', one_line=False, sections=['%header'])
     def insert_scl_init(self, pattern, text):
         scl_init = '%{{?scl:%scl_package {0}}}\n%{{!?scl:%global pkg_name %{{name}}}}'.format(self.get_original_name())
         return '{0}\n\n{1}'.format(scl_init, text)
@@ -68,7 +68,7 @@ class GenericTransformer(Transformer):
     def handle_name_macro(self, pattern, text):
         return pattern.sub(r'%{pkg_name}', text)
 
-    @matches(r'.*', one_line = False) # bit complicated to put it at a sane place, use whole spec
+    @matches(r'.*', one_line=False, sections=['%header']) # bit complicated to put it at a sane place, use whole spec
     def handle_meta_runtime_dep(self, pattern, text):
         if not self.options.get('meta_runtime_dep'):
             return text
