@@ -1,4 +1,5 @@
 import re
+import settings
 
 class Specfile(object):
     def __init__(self, specfile):
@@ -10,15 +11,7 @@ class Specfile(object):
         self.sections = self.split_sections()
     
     def split_sections(self):
-        headers_re = [re.compile(x, re.M) for x in [r'^%description',
-                                                    r'^%package',
-                                                    r'^%prep',
-                                                    r'^%build',
-                                                    r'^%install',
-                                                    r'^%clean',
-                                                    r'^%check',
-                                                    r'^%files',
-                                                    r'^%changelog']]
+        headers_re = [re.compile('^' + x, re.M) for x in settings.SPECFILE_SECTIONS]
         section_starts = []
         for header in headers_re:
             for match in header.finditer(self.specfile):
