@@ -1,7 +1,7 @@
 import re
 
 from spec2scl.decorators import matches
-from spec2scl.transformers.transformer import Transformer
+from spec2scl.transformer import Transformer
 
 class GenericTransformer(Transformer):
     def __init__(self, spec, options = None):

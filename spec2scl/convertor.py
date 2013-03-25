@@ -1,4 +1,4 @@
-from spec2scl.transformers.transformer import Transformer
+from spec2scl.transformer import Transformer
 from spec2scl.settings import *
 
 class Convertor(object):
