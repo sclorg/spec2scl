@@ -73,6 +73,7 @@ class Transformer(object):
             text: string to match in
         Returns: list of strings, each of which is a whole command, in the exact form as it occurs in the specfile
         """
+        # TODO: this is getting ugly, refactor
         commands = []
         while(True):
             # find the matched string (usually beginning of command) inside text
@@ -103,8 +104,10 @@ class Transformer(object):
 
             command = ''.join(whole_command)
             text = text[len(command):] # so that we don't find it again
-
-            commands.append(command)
+            comment_index = command.find('#')
+            # only append if not matched
+            if comment_index == -1 or command.find(matched) < comment_index:
+                commands.append(command)
 
         return commands
 

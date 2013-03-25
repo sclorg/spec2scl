@@ -147,3 +147,12 @@ class TestTransformer(TransformerTestCase):
         self.st.scl_spec = 'ham\n\n'
         self.st.apply_more_line_transformers()
         assert True # if it didn't end in endless loop, we're fine
+
+    @pytest.mark.parametrize(('spec'), [
+        ('# ham\n'),
+        ('blahblah # ham\n'),
+    ])
+    def test_ignores_commented_commands(self, spec):
+        self.t.original_spec = spec
+        self.t.scl_spec = spec
+        assert 'enable' not in self.t.transform()
