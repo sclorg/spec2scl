@@ -70,7 +70,7 @@ class GenericTransformer(Transformer):
 
     @matches(r'.*', one_line = False) # bit complicated to put it at a sane place, use whole spec
     def handle_meta_runtime_dep(self, pattern, text):
-        if not self.options['meta_runtime_dep']:
+        if not self.options.get('meta_runtime_dep'):
             return text
         place_before_re = [re.compile(i, re.MULTILINE) for i in ['(^BuildRequires)', '(^Requires)', '(^Name)']]
 
