@@ -5,17 +5,15 @@ import re
 import pytest
 
 from spec2scl.decorators import matches
-from spec2scl.transformers.transformer import Transformer
+from spec2scl.transformer import Transformer
+from spec2scl.specfile import Specfile
 
 from tests.transformer_test_case import TransformerTestCase
 
 class SpamTransformer(Transformer):
     """This is a testing class to test various Transformer methods"""
-    def __init__(self, spec, options = None):
-        self.original_spec = spec
-        self.scl_spec = spec
-        self.options = options or {}
-        self.one_line_transformers, self.more_lines_transformers = self.collect_transformer_methods()
+    def __init__(self, original_spec, spec, options = None):
+        super(SpamTransformer, self).__init__(original_spec, spec, options)
 
     @matches(r'spam')
     def handle_spam(self, pattern, text):
@@ -50,8 +48,8 @@ class SpamTransformer(Transformer):
 
 class TestTransformer(TransformerTestCase):
     def setup_method(self, method):
-        self.t = Transformer('', {})
-        self.st = SpamTransformer('', {})
+        self.t = Transformer('', None, {})
+        self.st = SpamTransformer('', None, {})
 
     # ========================= tests for methods that don't apply to Transformer subclasses
 
@@ -136,7 +134,7 @@ class TestTransformer(TransformerTestCase):
     ])
     def test_transformers_dont_apply_scl_enable_twice(self, spec, expected):
         self.st.original_spec = spec
-        self.st.scl_spec = spec
+        self.st.spec = Specfile(spec)
         assert self.st.apply_more_line_transformers() == expected
 
     def test_one_line_pattern_endswith_arbitrary_space_doesnt_hang(self):
