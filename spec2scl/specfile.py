@@ -1,3 +1,7 @@
+try:
+    from functools import reduce
+except ImportError:
+    pass # we're on Python 2 => ok
 import re
 
 from spec2scl import settings
@@ -39,4 +43,4 @@ class Specfile(object):
     def __str__(self):
         # in tests (maybe in reality, too), we may have an empty header, which will result in 
         # putting unnecessary newlines on top => leave out empty sections from joining
-        return '\n\n'.join([section for section in zip(*self.sections)[1] if section])
+        return '\n\n'.join([section for section in list(zip(*self.sections))[1] if section])

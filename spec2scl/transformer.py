@@ -5,7 +5,7 @@ from spec2scl import specfile
 class Transformer(object):
     def __init__(self, options={}):
         self.options = options
-        self.subtransformers = map(lambda x: x(self.options), type(self).__subclasses__())
+        self.subtransformers = list(map(lambda x: x(self.options), type(self).__subclasses__()))
         self.transformer_methods = self.collect_transformer_methods()
 
     def collect_transformer_methods(self):
@@ -19,7 +19,7 @@ class Transformer(object):
         return transformers
 
     def transform_one_liners(self, original_spec, section_name, section_text):
-        one_liners = filter(lambda x: x[2], self.transformer_methods)
+        one_liners = list(filter(lambda x: x[2], self.transformer_methods))
         split_section = section_text.splitlines()
         for index, line in enumerate(split_section):
             for func, pattern, _, sections in one_liners:
