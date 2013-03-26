@@ -9,3 +9,5 @@ SPECFILE_SECTIONS=['%header', # special "section" for the start of specfile
                    '%files',
                    '%changelog']
 
+RUNTIME_SECTIONS=['%prep', '%build', '%install', '%clean', '%check']
+METAINFO_SECTIONS=['%header', '%package']
