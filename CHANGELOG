@@ -1,3 +1,7 @@
+1.0.1
+- If the matched transformed command doesn't end with newline, then add it.
+- Fix writing Specfile objects to files with "-i" option.
+
 1.0.0
 - Major internal rewrite:
 -- gives spec2scl ability to recognize specfile sections and apply certain transforms
