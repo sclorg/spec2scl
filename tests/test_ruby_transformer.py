@@ -8,22 +8,13 @@ class TestRubyTransformer(TransformerTestCase):
     def setup_method(self, method):
         self.t = RubyTransformer({})
 
-    def get_pattern_for_spec(self, patterns, spec):
-        for pattern in patterns:
-            if pattern.search(spec):
-                return pattern
-
     @pytest.mark.parametrize(('spec'), [
-        ('"rubygem install" string should not get modified'),
-        ('"rubygem-rspec" string should not get modified'),
-        ('"rubygem(rspec)" string should not get modified'),
-        ('"%exclude %{gem_instdir}/.rspec " string should not get modified (the empty space is important)'),
         ('#ruby -some params string should not get modified'),
-        ('neither should this ruby string'),
     ])
     def test_ruby_specific_commands_not_matching(self, spec):
-        patterns = self.t.handle_ruby_specific_commands.matches
-        assert self.get_pattern_for_spec(patterns, spec) == None
+        spec = self.make_prep(spec)
+        handler = self.t.handle_ruby_specific_commands
+        assert self.get_pattern_for_spec(handler, spec) == None
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('gem install spam', '%{?scl:scl enable %{scl} "}\ngem install spam%{?scl:"}\n'),
@@ -34,5 +25,6 @@ class TestRubyTransformer(TransformerTestCase):
         ('ruby -some params', '%{?scl:scl enable %{scl} "}\nruby -some params%{?scl:"}\n'),
     ])
     def test_ruby_specific_commands_matching(self, spec, expected):
-        patterns = self.t.handle_ruby_specific_commands.matches
-        assert self.t.handle_ruby_specific_commands(spec, self.get_pattern_for_spec(patterns, spec), spec) == expected
+        spec = self.make_prep(spec)
+        handler = self.t.handle_ruby_specific_commands
+        assert self.t.handle_ruby_specific_commands(spec, self.get_pattern_for_spec(handler, spec), spec) == self.make_prep(expected)

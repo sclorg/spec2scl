@@ -15,5 +15,6 @@ class TestPythonTransformer(TransformerTestCase):
         ('%{__pecl} blah blah\n', '%{?scl:scl enable %{scl} "}\n%{__pecl} blah blah\n%{?scl:"}\n'),
     ])
     def test_python_specific_commands_matching(self, spec, expected):
-        patterns = self.t.handle_php_specific_commands.matches
-        assert self.t.handle_php_specific_commands(spec, self.get_pattern_for_spec(patterns, spec), spec) == expected
+        spec = self.make_prep(spec)
+        handler = self.t.handle_php_specific_commands
+        assert self.t.handle_php_specific_commands(spec, self.get_pattern_for_spec(handler, spec), spec) == self.make_prep(expected)

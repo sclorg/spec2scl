@@ -27,8 +27,8 @@ class TestGenericTransformer(TransformerTestCase):
         ('Obsoletes: spam blah foo', 'Obsoletes: %{?scl_prefix}spam %{?scl_prefix}blah %{?scl_prefix}foo'),
     ])
     def test_handle_dependency_tag(self, spec, expected):
-        patterns = self.t.handle_dependency_tag.matches
-        assert self.t.handle_dependency_tag(spec, self.get_pattern_for_spec(patterns, spec), spec) == expected
+        handler = self.t.handle_dependency_tag
+        assert self.t.handle_dependency_tag(spec, self.get_pattern_for_spec(handler, spec), spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('Requires: perl(:MODULE_COMPAT_%(eval "`perl -V:version`"; echo $version))',
@@ -38,16 +38,16 @@ class TestGenericTransformer(TransformerTestCase):
 
     ])
     def test_handle_dependency_tag_with_spaces_in_brackets(self, spec, expected):
-        patterns = self.t.handle_dependency_tag.matches
-        assert self.t.handle_dependency_tag(spec, self.get_pattern_for_spec(patterns, spec), spec) == expected
+        handler = self.t.handle_dependency_tag
+        assert self.t.handle_dependency_tag(spec, self.get_pattern_for_spec(handler, spec), spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('Requires: /foo/spam', 'Requires: %{?_scl_root}/foo/spam'),
         ('Requires: spam /foo/eggs', 'Requires: %{?scl_prefix}spam %{?_scl_root}/foo/eggs'),
     ])
     def test_handle_dependency_tag_with_path(self, spec, expected):
-        patterns = self.t.handle_dependency_tag.matches
-        assert self.t.handle_dependency_tag(spec, self.get_pattern_for_spec(patterns, spec), spec) == expected
+        handler = self.t.handle_dependency_tag
+        assert self.t.handle_dependency_tag(spec, self.get_pattern_for_spec(handler, spec), spec) == expected
 
     @pytest.mark.parametrize(('spec', 'scl_requires', 'expected'), [
         ('Requires: spam = %{epoch}:%{version}-%{release}', 'a', 'Requires: %{?scl_prefix}spam = %{epoch}:%{version}-%{release}'),
@@ -59,10 +59,10 @@ class TestGenericTransformer(TransformerTestCase):
         ('BuildRequires: python(spam)', ['python(spam)', 'spam'], 'BuildRequires: %{?scl_prefix}python(spam)'),
     ])
     def test_handle_dependency_tag_modified_scl_requires(self, spec, scl_requires, expected):
-        patterns = self.t.handle_dependency_tag_modified_by_list.matches
+        handler = self.t.handle_dependency_tag_modified_by_list
         if scl_requires:
             self.t.options = {'scl_requires': scl_requires}
-        assert self.t.handle_dependency_tag_modified_by_list(spec, self.get_pattern_for_spec(patterns, spec), spec) == expected
+        assert self.t.handle_dependency_tag_modified_by_list(spec, self.get_pattern_for_spec(handler, spec), spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('%package \t -n spam', '%package \t -n %{?scl_prefix}spam'),
@@ -70,8 +70,8 @@ class TestGenericTransformer(TransformerTestCase):
         ('%files -n   spam', '%files -n   %{?scl_prefix}spam'),
     ])
     def test_handle_subpackages_should_sclize(self, spec, expected):
-        patterns = self.t.handle_subpackages.matches
-        assert self.t.handle_subpackages(spec, self.get_pattern_for_spec(patterns, spec), spec) == expected
+        handler = self.t.handle_subpackages
+        assert self.t.handle_subpackages(spec, self.get_pattern_for_spec(handler, spec), spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('%package spam', '%package spam'),
@@ -79,8 +79,8 @@ class TestGenericTransformer(TransformerTestCase):
         ('%files -nnn spam', '%files -nnn spam'),
     ])
     def test_handle_subpackages_should_not_sclize(self, spec, expected):
-        patterns = self.t.handle_subpackages.matches
-        assert self.get_pattern_for_spec(patterns, spec) == None
+        handler = self.t.handle_subpackages
+        assert self.get_pattern_for_spec(handler, spec) == None
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('%setup', '%setup -n %{pkg_name}-%{version}'),
@@ -128,5 +128,6 @@ class TestGenericTransformer(TransformerTestCase):
         ('make foo\n', '%{?scl:scl enable %{scl} "}\nmake foo\n%{?scl:"}\n'),
     ])
     def test_handle_name_macro(self, spec, expected):
-        patterns = self.t.handle_configure_make.matches
-        assert self.t.handle_configure_make(spec, self.get_pattern_for_spec(patterns, spec), spec) == expected
+        spec = self.make_prep(spec)
+        handler = self.t.handle_configure_make
+        assert self.t.handle_configure_make(spec, self.get_pattern_for_spec(handler, spec), spec) == self.make_prep(expected)
