@@ -93,7 +93,7 @@ def main():
         else:
             try:
                 f = open(args.specfiles[i], 'w')
-                f.write(conv)
+                f.write(str(conv))
             except IOError as e:
                 print('Could not open file: {0}'.format(e))
             else:
