@@ -7,7 +7,6 @@ class Convertor(object):
     def __init__(self, spec, options = None):
         spec = self.list_to_str(spec)
         self.original_spec = spec
-        self.spec = Specfile(spec)
         self.options = options or {}
 
     def list_to_str(self, arg):
@@ -16,4 +15,4 @@ class Convertor(object):
         return arg
 
     def convert(self):
-        return Transformer(self.original_spec, self.spec, self.options).transform()
+        return Transformer(self.original_spec, Specfile(self.original_spec), self.options).transform()
