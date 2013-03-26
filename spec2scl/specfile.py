@@ -32,5 +32,8 @@ class Specfile(object):
 
         return sections
 
+    def __contains__(self, what):
+        return reduce(lambda x, y: x or (what in y[1]), self.sections, False)
+
     def __str__(self):
         return '\n\n'.join(zip(*self.sections)[1])
