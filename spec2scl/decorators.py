@@ -1,5 +1,6 @@
 import re
-import settings
+
+from spec2scl import settings
 
 def matches(pattern, one_line=True, sections=settings.RUNTIME_SECTIONS, flags=0):
     if not one_line:

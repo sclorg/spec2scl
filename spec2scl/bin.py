@@ -1,5 +1,4 @@
 import argparse
-import os
 import sys
 
 from spec2scl.convertor import Convertor

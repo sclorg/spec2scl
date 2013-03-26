@@ -1,8 +1,8 @@
 from spec2scl import settings
+from spec2scl import transformer
 from spec2scl.decorators import matches
-from spec2scl.transformer import Transformer
 
-class RTransformer(Transformer):
+class RTransformer(transformer.Transformer):
     def __init__(self, options={}):
         super(RTransformer, self).__init__(options)
 

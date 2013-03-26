@@ -1,8 +1,8 @@
 from spec2scl import settings
+from spec2scl import transformer
 from spec2scl.decorators import matches
-from spec2scl.transformer import Transformer
 
-class RubyTransformer(Transformer):
+class RubyTransformer(transformer.Transformer):
     def __init__(self,  options={}):
             super(RubyTransformer, self).__init__(options)
 

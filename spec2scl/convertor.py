@@ -1,7 +1,6 @@
-from spec2scl.transformer import Transformer
-from spec2scl.transformers import *
-from spec2scl.settings import *
-from spec2scl.specfile import Specfile
+import spec2scl.transformers
+
+from spec2scl import transformer
 
 class Convertor(object):
     def __init__(self, spec, options = None):
@@ -15,4 +14,4 @@ class Convertor(object):
         return arg
 
     def convert(self):
-        return Transformer(self.options).transform(self.original_spec)
+        return transformer.Transformer(self.options).transform(self.original_spec)

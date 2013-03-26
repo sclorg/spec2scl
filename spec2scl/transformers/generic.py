@@ -2,9 +2,9 @@ import re
 
 from spec2scl.decorators import matches
 from spec2scl import settings
-from spec2scl.transformer import Transformer
+from spec2scl import transformer
 
-class GenericTransformer(Transformer):
+class GenericTransformer(transformer.Transformer):
     def __init__(self, options={}):
         super(GenericTransformer, self).__init__(options)
 

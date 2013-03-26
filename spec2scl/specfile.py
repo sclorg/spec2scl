@@ -1,5 +1,6 @@
 import re
-import settings
+
+from spec2scl import settings
 
 class Specfile(object):
     def __init__(self, specfile):
