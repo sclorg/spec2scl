@@ -1,3 +1,9 @@
+1.0.0
+- Major internal rewrite:
+-- gives spec2scl ability to recognize specfile sections and apply certain transforms
+   only in certain sections.
+-- Transformers are now independent of the specfile they convert, which improves
+   testability and makes it easy to use spec2scl as a library.
 - spec2scl now runs on Python 3.
 - Killed endless loop on generic transformer (thanks Mirek Suchy for reporting).
 - Commented commands now don't get sclized (thanks Mirek Suchy for reporting).
