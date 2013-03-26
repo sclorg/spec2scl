@@ -18,7 +18,9 @@ class Specfile(object):
                 section_starts.append(match.start())
 
         section_starts.sort()
-        sections = [('%header', self.specfile[:section_starts[0]])]
+        # this is mainly for tests - if the header is the only section
+        header_end = section_starts[0] if section_starts else len(self.specfile)
+        sections = [('%header', self.specfile[:header_end])]
         for i in range(len(section_starts)):
             if len(section_starts) > i + 1:
                 curr_section = self.specfile[section_starts[i]:section_starts[i+1]]
