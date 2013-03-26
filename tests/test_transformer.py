@@ -4,6 +4,7 @@ import re
 
 import pytest
 
+from spec2scl import settings
 from spec2scl.decorators import matches
 from spec2scl.transformer import Transformer
 from spec2scl.specfile import Specfile
@@ -15,7 +16,7 @@ class SpamTransformer(Transformer):
     def __init__(self, options={}):
         super(SpamTransformer, self).__init__(options)
 
-    @matches(r'spam')
+    @matches(r'spam', sections=settings.RUNTIME_SECTIONS)
     def handle_spam(self, original_spec, pattern, text):
         return text.replace('spam', 'handled spam', 1)
 
@@ -142,3 +143,10 @@ class TestTransformer(TransformerTestCase):
     ])
     def test_ignores_commented_commands(self, spec):
         assert 'enable' not in self.t.transform(spec)
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('spam', 'spam'),
+        ('%build\nspam', '%build\nhandled spam'),
+    ])
+    def test_transformer_only_applies_to_specified_sections(self, spec, expected):
+        assert str(self.st._transform(spec, Specfile(spec))) == expected
