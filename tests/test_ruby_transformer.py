@@ -6,7 +6,7 @@ from tests.transformer_test_case import TransformerTestCase
 
 class TestRubyTransformer(TransformerTestCase):
     def setup_method(self, method):
-        self.t = RubyTransformer('', {})
+        self.t = RubyTransformer({})
 
     def get_pattern_for_spec(self, patterns, spec):
         for pattern in patterns:
@@ -35,4 +35,4 @@ class TestRubyTransformer(TransformerTestCase):
     ])
     def test_ruby_specific_commands_matching(self, spec, expected):
         patterns = self.t.handle_ruby_specific_commands.matches
-        assert self.t.handle_ruby_specific_commands(self.get_pattern_for_spec(patterns, spec), spec) == expected
+        assert self.t.handle_ruby_specific_commands(spec, self.get_pattern_for_spec(patterns, spec), spec) == expected

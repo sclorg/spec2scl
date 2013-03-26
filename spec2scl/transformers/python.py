@@ -9,5 +9,5 @@ class PythonTransformer(Transformer):
     @matches(r'nosetests', one_line = False)
     @matches(r'py\.test', one_line = False)
     @matches(r'sphinx-', one_line = False)
-    def handle_python_specific_commands(self, pattern, text):
+    def handle_python_specific_commands(self, original_spec, pattern, text):
         return self.sclize_all_commands(pattern, text)

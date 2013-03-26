@@ -6,7 +6,7 @@ from tests.transformer_test_case import TransformerTestCase
 
 class TestRTransformer(TransformerTestCase):
     def setup_method(self, method):
-        self.t = RTransformer('', {})
+        self.t = RTransformer({})
 
     @pytest.mark.parametrize(('spec'), [
         ('"%{__bindir}/R foo" stays'),
@@ -21,4 +21,4 @@ class TestRTransformer(TransformerTestCase):
     ])
     def test_R_specific_commands_matching(self, spec, expected):
         patterns = self.t.handle_R_specific_commands.matches
-        assert self.t.handle_R_specific_commands(self.get_pattern_for_spec(patterns, spec), spec) == expected
+        assert self.t.handle_R_specific_commands(spec, self.get_pattern_for_spec(patterns, spec), spec) == expected
