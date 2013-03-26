@@ -1,6 +1,7 @@
 import re
 
 from spec2scl.decorators import matches
+from spec2scl import settings
 from spec2scl.transformer import Transformer
 
 class GenericTransformer(Transformer):
@@ -12,10 +13,10 @@ class GenericTransformer(Transformer):
         scl_init = '%{{?scl:%scl_package {0}}}\n%{{!?scl:%global pkg_name %{{name}}}}'.format(self.get_original_name(original_spec))
         return '{0}\n\n{1}'.format(scl_init, text)
 
-    @matches(r'(?<!d)(Conflicts:\s*)([^\s]+)') # avoid BuildConflicts
-    @matches(r'(BuildConflicts:\s*)([^\s]+)')
-    @matches(r'(Provides:\s*)([^\s]+)')
-    @matches(r'(Obsoletes:\s*)([^\s]+)')
+    @matches(r'(?<!d)(Conflicts:\s*)([^\s]+)', sections=settings.METAINFO_SECTIONS) # avoid BuildConflicts
+    @matches(r'(BuildConflicts:\s*)([^\s]+)', sections=settings.METAINFO_SECTIONS)
+    @matches(r'(Provides:\s*)([^\s]+)', sections=settings.METAINFO_SECTIONS)
+    @matches(r'(Obsoletes:\s*)([^\s]+)', sections=settings.METAINFO_SECTIONS)
     def handle_dependency_tag(self, original_spec, pattern, text, scl_requires_effect = False):
         tag = text[0:text.find(':') + 1]
         deps = text[text.find(':') + 1:]
@@ -41,18 +42,18 @@ class GenericTransformer(Transformer):
         dep_re = re.compile(r'(?P<prespace>\s*)(?P<dep>([^\s]+(.+\))?))(?P<ver>\s*[<>=!]+\s*[^\s]+)?(?P<postspace>\s*)')
         return tag + dep_re.sub(handle_one_dep, deps)
 
-    @matches(r'(?<!d)(Requires:\s*)([^[\s]+)') # avoid BuildRequires
-    @matches(r'(BuildRequires:\s*)([^\s]+)')
+    @matches(r'(?<!d)(Requires:\s*)([^[\s]+)', sections=settings.METAINFO_SECTIONS) # avoid BuildRequires
+    @matches(r'(BuildRequires:\s*)([^\s]+)', sections=settings.METAINFO_SECTIONS)
     def handle_dependency_tag_modified_by_list(self, original_spec, pattern, text):
         return self.handle_dependency_tag(pattern, original_spec, text, True)
 
-    @matches(r'(%package\s+-n\s+)([^\s]+)')
-    @matches(r'(%description\s+-n\s+)([^\s]+)')
-    @matches(r'(%files\s+-n\s+)([^\s]+)')
+    @matches(r'(%package\s+-n\s+)([^\s]+)', sections=['%package'])
+    @matches(r'(%description\s+-n\s+)([^\s]+)', sections=['%description'])
+    @matches(r'(%files\s+-n\s+)([^\s]+)', sections=['%files'])
     def handle_subpackages(self, original_spec, pattern, text):
         return pattern.sub(r'\1%{?scl_prefix}\2', text)
 
-    @matches(r'%setup')
+    @matches(r'%setup', sections=['%prep'])
     def handle_setup_macro(self, original_spec, pattern, text):
         # only handle when -n is not present, otherwise it may be too complicated
         if text.find('-n') == -1:
@@ -60,15 +61,15 @@ class GenericTransformer(Transformer):
         else:
             return text
 
-    @matches(r'(Name:\s*)([^\s]+)')
+    @matches(r'(Name:\s*)([^\s]+)', sections=['%header'])
     def handle_name_tag(self, original_spec, pattern, text):
         return pattern.sub(r'\1%{?scl_prefix}\2', text)
 
-    @matches(r'%{name}')
+    @matches(r'%{name}', sections=settings.SPECFILE_SECTIONS)
     def handle_name_macro(self, original_spec, pattern, text):
         return pattern.sub(r'%{pkg_name}', text)
 
-    @matches(r'.*', one_line=False, sections=['%header']) # bit complicated to put it at a sane place, use whole spec
+    @matches(r'.*', one_line=False, sections=['%header'])
     def handle_meta_runtime_dep(self, original_spec, pattern, text):
         if not self.options.get('meta_runtime_dep'):
             return text
@@ -80,7 +81,7 @@ class GenericTransformer(Transformer):
                 index = match.start(0)
                 return '{0}%{{?scl:Requires: %{{scl}}-runtime}}\n{1}'.format(text[:index], text[index:])
 
-    @matches(r'^%?configure\s+', one_line = False)
-    @matches(r'^make\s+', one_line = False) # make is a common word, so don't take it too seriously
+    @matches(r'^%?configure\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
+    @matches(r'^make\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
     def handle_configure_make(self, original_spec, pattern, text):
         return self.sclize_all_commands(pattern, text)

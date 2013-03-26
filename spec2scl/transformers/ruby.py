@@ -1,3 +1,4 @@
+from spec2scl import settings
 from spec2scl.decorators import matches
 from spec2scl.transformer import Transformer
 
@@ -5,10 +6,12 @@ class RubyTransformer(Transformer):
     def __init__(self,  options={}):
             super(RubyTransformer, self).__init__(options)
 
-    @matches(r'(?<!y)gem\s+(?:(?:install)|(?:unpack)|(?:build)|(?:spec))', one_line = False) # not to match string like "rubygem install"
-    @matches(r'^ruby\s+', one_line = False) # carefully here, "ruby" will occur often in the specfile
-    @matches(r'testrb\s+', one_line = False)
-    @matches(r'testrb2\s+', one_line = False)
-    @matches(r'(?<![-.])rspec\s+', one_line = False) # avoid matching stuff like 'rubygem-rspec ' here
+    @matches(r'(?<!y)gem\s+(?:(?:install)|(?:unpack)|(?:build)|(?:spec))',
+             one_line=False,
+             sections=settings.RUNTIME_SECTIONS) # not to match string like "rubygem install"
+    @matches(r'^ruby\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
+    @matches(r'testrb\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
+    @matches(r'testrb2\s+', one_line = False, sections=settings.RUNTIME_SECTIONS)
+    @matches(r'(?<![-.])rspec\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
     def handle_ruby_specific_commands(self, original_spec, pattern, text):
         return self.sclize_all_commands(pattern, text)
