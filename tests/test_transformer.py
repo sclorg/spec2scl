@@ -12,44 +12,47 @@ from tests.transformer_test_case import TransformerTestCase
 
 class SpamTransformer(Transformer):
     """This is a testing class to test various Transformer methods"""
-    def __init__(self, original_spec, spec, options = None):
-        super(SpamTransformer, self).__init__(original_spec, spec, options)
+    def __init__(self, options={}):
+        super(SpamTransformer, self).__init__(options)
 
     @matches(r'spam')
-    def handle_spam(self, pattern, text):
+    def handle_spam(self, original_spec, pattern, text):
         return text.replace('spam', 'handled spam', 1)
 
-    @matches(r'spam\nspam', one_line = False)
-    def handle_global_spam(self, pattern, text):
+    @matches(r'spam\nspam', one_line=False)
+    def handle_global_spam(self, original_spec, pattern, text):
         return text.replace('spam\nspam', 'handled global\nspam', 1)
 
     @matches(r'foo')
-    def handle_foo(self, pattern, text):
+    def handle_foo(self, original_spec, pattern, text):
         return text.replace('foo', 'handled foo', 1)
 
-    @matches(r'foo\nfoo', one_line = False)
-    def handle_global_foo(self, pattern, text):
+    @matches(r'foo\nfoo', one_line=False)
+    def handle_global_foo(self, original_spec, pattern, text):
         return text.replace('foo\nfoo', 'handled global\nfoo', 1)
 
-    @matches(r'looney', one_line = False)
-    def handle_simple_global_looney(self, pattern, text):
+    @matches(r'looney', one_line=False)
+    def handle_simple_global_looney(self, original_spec, pattern, text):
         return self.sclize_all_commands(pattern, text)
 
     @matches(r'ham\s+', one_line=False)
-    def handle_spam_and_space(self, pattern, text):
+    def handle_spam_and_space(self, original_spec, pattern, text):
         return self.sclize_all_commands(pattern, text)
 
     # test helper attributes/methods
     # it may be needed to alter these when something is changed in this class
-    _transformers_one_line = set(['handle_spam', 'handle_foo'])
-    _transformers_more_lines = set(['handle_global_spam', 'handle_global_foo', 'handle_simple_global_looney', 'handle_spam_and_space'])
-    _patterns_one_line = set([r'spam', r'foo'])
-    _patterns_more_lines = set([r'spam\nspam', r'foo\nfoo', r'looney', r'ham\s+'])
+    _transformer_names = set(['handle_spam', 'handle_foo', 'handle_global_spam',
+                              'handle_global_foo', 'handle_simple_global_looney',
+                              'handle_spam_and_space'])
+    _transformer_matches = set([r'spam', r'foo', r'spam\nspam', r'foo\nfoo',
+                                r'looney', r'ham\s+'])
+    _transformer_one_liners = 2
+    _transformer_more_liners = 4
 
 class TestTransformer(TransformerTestCase):
     def setup_method(self, method):
-        self.t = Transformer('', None, {})
-        self.st = SpamTransformer('', None, {})
+        self.t = Transformer()
+        self.st = SpamTransformer()
 
     # ========================= tests for methods that don't apply to Transformer subclasses
 
@@ -61,9 +64,7 @@ class TestTransformer(TransformerTestCase):
         ('Name: foo-_%{spam}', 'foo-_%{spam}'),
     ])
     def test_get_original_name(self, spec, expected):
-        self.t.original_spec = spec
-        self.t.scl_spec = 'Name: error if taken from here'
-        assert self.t.get_original_name() == expected
+        assert self.t.get_original_name(spec) == expected
 
     @pytest.mark.parametrize(('pattern', 'spec', 'expected'), [
         (re.compile(r'eat spam'), 'eat spam\neat eat spam', ['eat spam\n', 'eat eat spam']),
@@ -90,32 +91,27 @@ class TestTransformer(TransformerTestCase):
     # ========================= tests for methods that apply to Transformer subclasses
 
     def test_collect_transformer_methods(self):
-        one_line, more_lines = self.st.collect_transformer_methods()
+        methods, matches, one_line, sections = zip(*self.st.collect_transformer_methods())
         # check methods
-        assert set(map(lambda x: x.__name__, one_line.keys())) == self.st._transformers_one_line
-        assert set(map(lambda x: x.__name__, more_lines.keys())) == self.st._transformers_more_lines
-        # check patterns - the one_line.values() and more_lines.values() are list of lists -> use chain to flatten them
-        # and then map them to their patterns
-        assert set(map(lambda x: x.pattern, itertools.chain(*one_line.values()))) == self.st._patterns_one_line
-        assert set(map(lambda x: x.pattern, itertools.chain(*more_lines.values()))) == self.st._patterns_more_lines
+        assert set(map(lambda x: x.__name__, methods)) == self.st._transformer_names
+        assert set(map(lambda x: x.pattern, matches)) == self.st._transformer_matches
+        assert one_line.count(True) == self.st._transformer_one_liners
+        assert one_line.count(False) == self.st._transformer_more_liners
+        # TODO: check sections
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('nothing to do', 'nothing to do'),
         ('foo', 'handled foo'),
         ('spam', 'handled spam'),
     ])
-    def test_apply_one_line_transformers(self, spec, expected):
-        self.st.original_spec = spec
-        self.st.scl_spec = spec
-        assert self.st.apply_one_line_transformers() == expected
+    def test_transform_one_liners(self, spec, expected):
+        assert self.st.transform_one_liners(spec, '%prep', spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('foo spam', 'handled foo handled spam'),
     ])
-    def test_multiple_one_line_transformers_apply_on_one_line(self, spec, expected):
-        self.st.original_spec = spec
-        self.st.scl_spec = spec
-        assert self.st.apply_one_line_transformers() == expected
+    def test_multiple_transform_one_liners_apply_on_one_line(self, spec, expected):
+        assert self.st.transform_one_liners(spec, '%prep', spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('nothing to do', 'nothing to do'),
@@ -124,26 +120,20 @@ class TestTransformer(TransformerTestCase):
         ('spam\nspam\nfoo\nfoo', 'handled global\nspam\nhandled global\nfoo'),
         ('spam\nxspam', 'spam\nxspam'),
     ])
-    def test_apply_more_line_transformers(self, spec, expected):
-        self.st.original_spec = spec
-        self.st.scl_spec = spec
-        assert self.st.apply_more_line_transformers() == expected
+    def test_transform_one_liners(self, spec, expected):
+        assert self.st.transform_more_liners(spec, '%prep', spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('looney\nlooney\n', '%{?scl:scl enable %{scl} "}\nlooney\n%{?scl:"}\n%{?scl:scl enable %{scl} "}\nlooney\n%{?scl:"}\n'),
     ])
     def test_transformers_dont_apply_scl_enable_twice(self, spec, expected):
-        self.st.original_spec = spec
-        self.st.spec = Specfile(spec)
-        assert self.st.apply_more_line_transformers() == expected
+        assert self.st.transform_more_liners(spec, '%prep', spec) == expected
 
     def test_one_line_pattern_endswith_arbitrary_space_doesnt_hang(self):
         # if one line pattern ends with \s+, then it might match multiple \n
         # therefore it won't get found in lines.split in find_whole_commands
         # (well, it didn't, now it works)
-        self.st.original_spec = 'ham\n\n'
-        self.st.scl_spec = 'ham\n\n'
-        self.st.apply_more_line_transformers()
+        self.st.transform_more_liners('ham\n\n', '%prep', 'ham\n\n')
         assert True # if it didn't end in endless loop, we're fine
 
     @pytest.mark.parametrize(('spec'), [
@@ -151,6 +141,4 @@ class TestTransformer(TransformerTestCase):
         ('blahblah # ham\n'),
     ])
     def test_ignores_commented_commands(self, spec):
-        self.t.original_spec = spec
-        self.t.scl_spec = spec
-        assert 'enable' not in self.t.transform()
+        assert 'enable' not in self.t.transform(spec)
