@@ -1,7 +1,7 @@
 import re
 import settings
 
-def matches(pattern, one_line=True, sections=settings.SPECFILE_SECTIONS, flags=0):
+def matches(pattern, one_line=True, sections=settings.RUNTIME_SECTIONS, flags=0):
     if not one_line:
         flags = re.MULTILINE
 
