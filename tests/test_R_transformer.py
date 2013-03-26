@@ -17,7 +17,7 @@ class TestRTransformer(TransformerTestCase):
         assert self.get_pattern_for_spec(handler, spec) == None
 
     @pytest.mark.parametrize(('spec', 'expected'), [
-        ('R CMD foo bar', '%{?scl:scl enable %{scl} "}\nR CMD foo bar%{?scl:"}\n'),
+        ('R CMD foo bar', '%{?scl:scl enable %{scl} "}\nR CMD foo bar\n%{?scl:"}\n'),
         ('%{__bindir}/R CMD foo bar\n', '%{?scl:scl enable %{scl} "}\n%{__bindir}/R CMD foo bar\n%{?scl:"}\n'),
     ])
     def test_R_specific_commands_matching(self, spec, expected):

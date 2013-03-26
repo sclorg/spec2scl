@@ -122,9 +122,9 @@ class TestGenericTransformer(TransformerTestCase):
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('configure\n', '%{?scl:scl enable %{scl} "}\nconfigure\n%{?scl:"}\n'),
-        ('%configure ', '%{?scl:scl enable %{scl} "}\n%configure %{?scl:"}\n'),
-        ('%configure --foo \\n --bar', '%{?scl:scl enable %{scl} "}\n%configure --foo \\n --bar%{?scl:"}\n'),
-        ('make ', '%{?scl:scl enable %{scl} "}\nmake %{?scl:"}\n'),
+        ('%configure ', '%{?scl:scl enable %{scl} "}\n%configure \n%{?scl:"}\n'),
+        ('%configure --foo \\n --bar', '%{?scl:scl enable %{scl} "}\n%configure --foo \\n --bar\n%{?scl:"}\n'),
+        ('make ', '%{?scl:scl enable %{scl} "}\nmake \n%{?scl:"}\n'),
         ('make foo\n', '%{?scl:scl enable %{scl} "}\nmake foo\n%{?scl:"}\n'),
     ])
     def test_handle_name_macro(self, spec, expected):

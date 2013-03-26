@@ -112,7 +112,7 @@ class Transformer(object):
 
     def sclize_one_command(self, command):
         new_command = [None] * 3
-        new_command[1] = command
+        new_command[1] = command if command.endswith('\n') else command + '\n'
 
         if self.command_needs_heredoc_for_execution(command):
             new_command[0] = '%{?scl:scl enable %{scl} - << \EOF}\n'
