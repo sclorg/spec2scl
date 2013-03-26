@@ -36,4 +36,6 @@ class Specfile(object):
         return reduce(lambda x, y: x or (what in y[1]), self.sections, False)
 
     def __str__(self):
-        return '\n\n'.join(zip(*self.sections)[1])
+        # in tests (maybe in reality, too), we may have an empty header, which will result in 
+        # putting unnecessary newlines on top => leave out empty sections from joining
+        return '\n\n'.join([section for section in zip(*self.sections)[1] if section])
