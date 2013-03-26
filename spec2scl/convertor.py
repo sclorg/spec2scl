@@ -15,4 +15,4 @@ class Convertor(object):
         return arg
 
     def convert(self):
-        return Transformer(self.original_spec, Specfile(self.original_spec), self.options).transform()
+        return Transformer(self.options).transform(self.original_spec)

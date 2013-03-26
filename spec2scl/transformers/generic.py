@@ -4,19 +4,19 @@ from spec2scl.decorators import matches
 from spec2scl.transformer import Transformer
 
 class GenericTransformer(Transformer):
-    def __init__(self, original_spec, spec, options = None):
-        super(GenericTransformer, self).__init__(original_spec, spec, options)
+    def __init__(self, options={}):
+        super(GenericTransformer, self).__init__(options)
 
     @matches(r'^', one_line=False, sections=['%header'])
-    def insert_scl_init(self, pattern, text):
-        scl_init = '%{{?scl:%scl_package {0}}}\n%{{!?scl:%global pkg_name %{{name}}}}'.format(self.get_original_name())
+    def insert_scl_init(self, original_spec, pattern, text):
+        scl_init = '%{{?scl:%scl_package {0}}}\n%{{!?scl:%global pkg_name %{{name}}}}'.format(self.get_original_name(original_spec))
         return '{0}\n\n{1}'.format(scl_init, text)
 
     @matches(r'(?<!d)(Conflicts:\s*)([^\s]+)') # avoid BuildConflicts
     @matches(r'(BuildConflicts:\s*)([^\s]+)')
     @matches(r'(Provides:\s*)([^\s]+)')
     @matches(r'(Obsoletes:\s*)([^\s]+)')
-    def handle_dependency_tag(self, pattern, text, scl_requires_effect = False):
+    def handle_dependency_tag(self, original_spec, pattern, text, scl_requires_effect = False):
         tag = text[0:text.find(':') + 1]
         deps = text[text.find(':') + 1:]
         # handle more Requires on one line
@@ -43,17 +43,17 @@ class GenericTransformer(Transformer):
 
     @matches(r'(?<!d)(Requires:\s*)([^[\s]+)') # avoid BuildRequires
     @matches(r'(BuildRequires:\s*)([^\s]+)')
-    def handle_dependency_tag_modified_by_list(self, pattern, text):
-        return self.handle_dependency_tag(pattern, text, True)
+    def handle_dependency_tag_modified_by_list(self, original_spec, pattern, text):
+        return self.handle_dependency_tag(pattern, original_spec, text, True)
 
     @matches(r'(%package\s+-n\s+)([^\s]+)')
     @matches(r'(%description\s+-n\s+)([^\s]+)')
     @matches(r'(%files\s+-n\s+)([^\s]+)')
-    def handle_subpackages(self, pattern, text):
+    def handle_subpackages(self, original_spec, pattern, text):
         return pattern.sub(r'\1%{?scl_prefix}\2', text)
 
     @matches(r'%setup')
-    def handle_setup_macro(self, pattern, text):
+    def handle_setup_macro(self, original_spec, pattern, text):
         # only handle when -n is not present, otherwise it may be too complicated
         if text.find('-n') == -1:
             return text.replace(r'%setup', r'%setup -n %{pkg_name}-%{version}')
@@ -61,15 +61,15 @@ class GenericTransformer(Transformer):
             return text
 
     @matches(r'(Name:\s*)([^\s]+)')
-    def handle_name_tag(self, pattern, text):
+    def handle_name_tag(self, original_spec, pattern, text):
         return pattern.sub(r'\1%{?scl_prefix}\2', text)
 
     @matches(r'%{name}')
-    def handle_name_macro(self, pattern, text):
+    def handle_name_macro(self, original_spec, pattern, text):
         return pattern.sub(r'%{pkg_name}', text)
 
     @matches(r'.*', one_line=False, sections=['%header']) # bit complicated to put it at a sane place, use whole spec
-    def handle_meta_runtime_dep(self, pattern, text):
+    def handle_meta_runtime_dep(self, original_spec, pattern, text):
         if not self.options.get('meta_runtime_dep'):
             return text
         place_before_re = [re.compile(i, re.MULTILINE) for i in ['(^BuildRequires)', '(^Requires)', '(^Name)']]
@@ -82,5 +82,5 @@ class GenericTransformer(Transformer):
 
     @matches(r'^%?configure\s+', one_line = False)
     @matches(r'^make\s+', one_line = False) # make is a common word, so don't take it too seriously
-    def handle_configure_make(self, pattern, text):
+    def handle_configure_make(self, original_spec, pattern, text):
         return self.sclize_all_commands(pattern, text)

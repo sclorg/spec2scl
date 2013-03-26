@@ -1,12 +1,11 @@
 import re
 
+from spec2scl import specfile
+
 class Transformer(object):
-    def __init__(self, original_spec, spec, options = None):
-        self.original_spec = original_spec
-        self.spec = spec
-        self.options = options or {}
-        self.subtransformers = map(lambda x: x(self.original_spec, self.spec, self.options),
-                                   type(self).__subclasses__())
+    def __init__(self, options={}):
+        self.options = options
+        self.subtransformers = map(lambda x: x(self.options), type(self).__subclasses__())
         self.transformer_methods = self.collect_transformer_methods()
 
     def collect_transformer_methods(self):
@@ -19,48 +18,48 @@ class Transformer(object):
 
         return transformers
 
-    def transform_one_liners(self, section_name, section_text):
+    def transform_one_liners(self, original_spec, section_name, section_text):
         one_liners = filter(lambda x: x[2], self.transformer_methods)
         split_section = section_text.splitlines()
         for index, line in enumerate(split_section):
             for func, pattern, _, sections in one_liners:
-                if pattern.search(line):
-                    print pattern.pattern
-                    print section_name in sections
                 if section_name in sections and pattern.search(line):
                     # let all the patterns modify the line
-                    line = func(pattern, line)
+                    line = func(original_spec, pattern, line)
                 split_section[index] = line
 
         return '\n'.join(split_section)
 
-    def transform_more_liners(self, section_name, section_text):
+    def transform_more_liners(self, original_spec, section_name, section_text):
         more_liners = filter(lambda x: not x[2], self.transformer_methods)
         for func, pattern, _, sections in more_liners:
             if section_name in sections and pattern.search(section_text):
-                section_text = func(pattern, section_text)
+                section_text = func(original_spec, pattern, section_text)
 
         return section_text
 
-    def transform(self):
+    def transform(self, original_spec):
+        spec = specfile.Specfile(original_spec)
         for subtrans in self.subtransformers:
-            subtrans._transform()
+            spec = subtrans._transform(original_spec, spec)
 
-        return self.spec
+        return spec
 
-    def _transform(self):
-        for i, section in enumerate(self.spec.sections):
-            self.spec.sections[i] = (section[0], self._transform_section(section[0], section[1]))
+    def _transform(self, original_spec, spec):
+        for i, section in enumerate(spec.sections):
+            spec.sections[i] = (section[0], self._transform_section(original_spec, section[0], section[1]))
 
-    def _transform_section(self, section_name, section_text):
-        section_text = self.transform_one_liners(section_name, section_text)
-        section_text = self.transform_more_liners(section_name, section_text)
+        return spec
+
+    def _transform_section(self, original_spec, section_name, section_text):
+        section_text = self.transform_one_liners(original_spec, section_name, section_text)
+        section_text = self.transform_more_liners(original_spec, section_name, section_text)
 
         return section_text
 
     # these methods are helpers for the actual transformations
-    def get_original_name(self):
-        name_match = re.compile(r'Name:\s*([^\s]+)').search(self.original_spec)
+    def get_original_name(self, original_spec):
+        name_match = re.compile(r'Name:\s*([^\s]+)').search(original_spec)
         if name_match:
             return name_match.group(1)
         else:
