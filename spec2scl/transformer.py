@@ -21,9 +21,12 @@ class Transformer(object):
     def transform_one_liners(self, original_spec, section_name, section_text):
         one_liners = list(filter(lambda x: x[2], self.transformer_methods))
         split_section = section_text.splitlines()
+        skip_func = self.options['skip_functions']
         for index, line in enumerate(split_section):
             for func, pattern, _, sections in one_liners:
-                if section_name in sections and pattern.search(line):
+                if (func.__name__ not in skip_func
+                    and section_name in sections
+                    and pattern.search(line)):
                     # let all the patterns modify the line
                     line = func(original_spec, pattern, line)
                 split_section[index] = line
@@ -32,7 +35,10 @@ class Transformer(object):
 
     def transform_more_liners(self, original_spec, section_name, section_text):
         more_liners = filter(lambda x: not x[2], self.transformer_methods)
+        skip_func = self.options['skip_functions']
         for func, pattern, _, sections in more_liners:
+            if func.__name__ in skip_func:
+                continue
             if section_name in sections and pattern.search(section_text):
                 section_text = func(original_spec, pattern, section_text)
 

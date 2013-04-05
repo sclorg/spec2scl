@@ -37,6 +37,12 @@ def main():
                         help = 'Read specfile from stdin',
                         action = 'store_true'
                        )
+    parser.add_argument('-k', '--skip-functions',
+                        required = False,
+                        default = "",
+                        help = 'Comma separated list of transformer functions to skip',
+                       )
+
 
     grp = parser.add_mutually_exclusive_group(required=False)
     grp.add_argument('-n', '--no-deps-convert',
@@ -81,9 +87,11 @@ def main():
         specs.append(sys.stdin.readlines())
 
     for spec in specs:
-        convertor = Convertor(spec=spec,
-                              options={'scl_deps': scl_deps,
-                                       'meta_runtime_dep': args.meta_runtime_dep})
+        options = {'scl_deps': scl_deps,
+                   'meta_runtime_dep': args.meta_runtime_dep,
+                   'skip_functions': args.skip_functions.split(',')}
+
+        convertor = Convertor(spec=spec, options=options)
         converted.append(convertor.convert())
 
     for i, conv in enumerate(converted):
