@@ -17,19 +17,16 @@ class GenericTransformer(transformer.Transformer):
     @matches(r'(BuildConflicts:\s*)([^\s]+)', sections=settings.METAINFO_SECTIONS)
     @matches(r'(Provides:\s*)([^\s]+)', sections=settings.METAINFO_SECTIONS)
     @matches(r'(Obsoletes:\s*)([^\s]+)', sections=settings.METAINFO_SECTIONS)
-    def handle_dependency_tag(self, original_spec, pattern, text, scl_requires_effect = False):
+    def handle_dependency_tag(self, original_spec, pattern, text, scl_deps_effect=False):
         tag = text[0:text.find(':') + 1]
         deps = text[text.find(':') + 1:]
         # handle more Requires on one line
         def handle_one_dep(matchobj):
             groupdict = matchobj.groupdict('')
 
-            if scl_requires_effect:
-                scl_requires = self.options.get('scl_requires', 'a')
-            else:
-                scl_requires = 'a' # convert all by default
+            scl_deps = self.options.get('scl_deps', True)
 
-            if scl_requires == 'a' or (not scl_requires == 'n' and groupdict['dep'] in scl_requires):
+            if scl_deps == True or (scl_deps_effect and scl_deps and groupdict['dep'] in scl_deps):
                 if groupdict['dep'].startswith('/'):
                     dep = '%{{?_scl_root}}{0}'.format(groupdict['dep'])
                 else:

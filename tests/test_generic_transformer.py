@@ -49,19 +49,18 @@ class TestGenericTransformer(TransformerTestCase):
         handler = self.t.handle_dependency_tag
         assert self.t.handle_dependency_tag(spec, self.get_pattern_for_spec(handler, spec), spec) == expected
 
-    @pytest.mark.parametrize(('spec', 'scl_requires', 'expected'), [
-        ('Requires: spam = %{epoch}:%{version}-%{release}', 'a', 'Requires: %{?scl_prefix}spam = %{epoch}:%{version}-%{release}'),
-        ('Requires: spam > 1, spam < 3', 'a', 'Requires: %{?scl_prefix}spam > 1, %{?scl_prefix}spam < 3'),
-        ('BuildRequires: python-%{spam}', 'a', 'BuildRequires: %{?scl_prefix}python-%{spam}'),
-        ('BuildRequires: python-%{spam}', 'n', 'BuildRequires: python-%{spam}'),
+    @pytest.mark.parametrize(('spec', 'scl_deps', 'expected'), [
+        ('Requires: spam = %{epoch}:%{version}-%{release}', True, 'Requires: %{?scl_prefix}spam = %{epoch}:%{version}-%{release}'),
+        ('Requires: spam > 1, spam < 3', True, 'Requires: %{?scl_prefix}spam > 1, %{?scl_prefix}spam < 3'),
+        ('BuildRequires: python-%{spam}', True, 'BuildRequires: %{?scl_prefix}python-%{spam}'),
+        ('BuildRequires: python-%{spam}', False, 'BuildRequires: python-%{spam}'),
         ('Requires: spam > 1, spam < 3', ['eggs'], 'Requires: spam > 1, spam < 3'),
         ('Requires: spam > 1, spam < 3', ['spam'], 'Requires: %{?scl_prefix}spam > 1, %{?scl_prefix}spam < 3'),
         ('BuildRequires: python(spam)', ['python(spam)', 'spam'], 'BuildRequires: %{?scl_prefix}python(spam)'),
     ])
-    def test_handle_dependency_tag_modified_scl_requires(self, spec, scl_requires, expected):
+    def test_handle_dependency_tag_modified_scl_deps(self, spec, scl_deps, expected):
         handler = self.t.handle_dependency_tag_modified_by_list
-        if scl_requires:
-            self.t.options = {'scl_requires': scl_requires}
+        self.t.options = {'scl_deps': scl_deps}
         assert self.t.handle_dependency_tag_modified_by_list(spec, self.get_pattern_for_spec(handler, spec), spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [

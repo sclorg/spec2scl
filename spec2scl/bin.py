@@ -3,17 +3,17 @@ import sys
 
 from spec2scl.convertor import Convertor
 
-def handle_scl_requires(args_requires, args_list_file):
-    scl_requires = None
-    if args_requires != 'f':
-        scl_requires = args_requires
-    else:
-        scl_requires = []
+def handle_scl_deps(no_deps_convert, args_list_file):
+    scl_deps = True
+    if no_deps_convert:
+        scl_deps = False
+    elif args_list_file:
+        scl_deps = []
         with open(args_list_file) as l:
             for i in l.readlines():
-                scl_requires.append(i.strip())
+                scl_deps.append(i.strip())
 
-    return scl_requires
+    return scl_deps
 
 def main():
     parser = argparse.ArgumentParser(description = 'Convert RPM specfile to be SCL ready.')
@@ -27,18 +27,6 @@ def main():
                         required = False,
                         action = 'store_true'
                        )
-    parser.add_argument('-r', '--requires',
-                        required = False,
-                        help = 'Convert a(ll)/n(one)/f(rom file) Requires and BuildRequires to scl. Defaults to all. If all or none is selected, this will negate effect of -l.',
-                        default = 'a',
-                        choices = 'anf',
-                        metavar = 'CONVERT_REQUIRES'
-                       )
-    parser.add_argument('-l', '--list-file',
-                        required = False,
-                        help = 'List of the packages/provides, that will be in the SCL (to convert Requires/BuildRequires properly).',
-                        metavar = 'SCL_CONTENTS_LIST'
-                       )
     parser.add_argument('-m', '--meta-runtime-dep',
                         required = False,
                         help = 'If used, runtime dependency on the scl runtime package will be added. The dependency is not added by default.',
@@ -49,6 +37,18 @@ def main():
                         help = 'Read specfile from stdin',
                         action = 'store_true'
                        )
+
+    grp = parser.add_mutually_exclusive_group(required=False)
+    grp.add_argument('-n', '--no-deps-convert',
+                     required=False,
+                     help='Don\'t convert dependency tags (mutually exclusive with -l).',
+                     action='store_true',
+                    )
+    grp.add_argument('-l', '--list-file',
+                     required=False,
+                     help='List of the packages/provides, that will be in the SCL (to convert Requires/BuildRequires properly).',
+                     metavar='SCL_CONTENTS_LIST'
+                    )
 
     args = parser.parse_args()
 
@@ -61,11 +61,8 @@ def main():
     if len(args.specfiles) > 0 and args.stdin:
         parser.error('You must either specify specfile(s) or reading from stdin, not both.')
 
-    if args.requires == 'f' and not args.list_file:
-        parser.error('You must specify the file with provides list if you want to use "-r f".')
-
     try:
-        scl_requires = handle_scl_requires(args.requires, args.list_file)
+        scl_deps = handle_scl_deps(args.no_deps_convert, args.list_file)
     except IOError as e:
         print('Could not open file: {0}'.format(e))
         sys.exit(1)
@@ -84,7 +81,9 @@ def main():
         specs.append(sys.stdin.readlines())
 
     for spec in specs:
-        convertor = Convertor(spec = spec, options = {'scl_requires': scl_requires, 'meta_runtime_dep': args.meta_runtime_dep})
+        convertor = Convertor(spec=spec,
+                              options={'scl_deps': scl_deps,
+                                       'meta_runtime_dep': args.meta_runtime_dep})
         converted.append(convertor.convert())
 
     for i, conv in enumerate(converted):
