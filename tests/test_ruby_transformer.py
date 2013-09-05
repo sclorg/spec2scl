@@ -2,7 +2,7 @@ import pytest
 
 from spec2scl.transformers.ruby import RubyTransformer
 
-from tests.transformer_test_case import TransformerTestCase
+from tests.transformer_test_case import TransformerTestCase, scl_enable, scl_disable
 
 class TestRubyTransformer(TransformerTestCase):
     def setup_method(self, method):
@@ -17,12 +17,12 @@ class TestRubyTransformer(TransformerTestCase):
         assert self.get_pattern_for_spec(handler, spec) == None
 
     @pytest.mark.parametrize(('spec', 'expected'), [
-        ('gem install spam', '%{?scl:scl enable %{scl} "}\ngem install spam\n%{?scl:"}\n'),
-        ('gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec', '%{?scl:scl enable %{scl} "}\ngem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec\n%{?scl:"}\n'),
-        ('gem install spam \\\n --more-spam\n', '%{?scl:scl enable %{scl} "}\ngem install spam \\\n --more-spam\n%{?scl:"}\n'),
-        ('RUBYOPT="-Ilib:test" rspec spec\n', '%{?scl:scl enable %{scl} - << \EOF}\nRUBYOPT="-Ilib:test" rspec spec\n%{?scl:EOF}\n'),
-        ('testrb spam', '%{?scl:scl enable %{scl} "}\ntestrb spam\n%{?scl:"}\n'),
-        ('ruby -some params', '%{?scl:scl enable %{scl} "}\nruby -some params\n%{?scl:"}\n'),
+        ('gem install spam', scl_enable + 'gem install spam\n' + scl_disable),
+        ('gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec', scl_enable + 'gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec\n' + scl_disable),
+        ('gem install spam \\\n --more-spam\n', scl_enable + 'gem install spam \\\n --more-spam\n' + scl_disable),
+        ('RUBYOPT="-Ilib:test" rspec spec\n', scl_enable + 'RUBYOPT="-Ilib:test" rspec spec\n' + scl_disable),
+        ('testrb spam', scl_enable + 'testrb spam\n' + scl_disable),
+        ('ruby -some params', scl_enable + 'ruby -some params\n' + scl_disable),
     ])
     def test_ruby_specific_commands_matching(self, spec, expected):
         spec = self.make_prep(spec)

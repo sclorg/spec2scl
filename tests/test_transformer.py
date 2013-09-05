@@ -9,7 +9,7 @@ from spec2scl.decorators import matches
 from spec2scl.transformer import Transformer
 from spec2scl.specfile import Specfile
 
-from tests.transformer_test_case import TransformerTestCase
+from tests.transformer_test_case import TransformerTestCase, scl_enable, scl_disable
 
 class SpamTransformer(Transformer):
     """This is a testing class to test various Transformer methods"""
@@ -78,17 +78,6 @@ class TestTransformer(TransformerTestCase):
     def test_find_whole_commands(self, pattern, spec, expected):
         assert self.t.find_whole_commands(pattern, spec) == expected
 
-    @pytest.mark.parametrize(('command', 'expected'), [
-        ('nope', False),
-        ('yep\\\nyep', False),
-        ('nope"', False),
-        ('nope\'', False),
-        ('yep"\'', True),
-        ('A=a yep"\'', True),
-    ])
-    def test_command_needs_heredoc_for_execution(self, command, expected):
-        assert self.t.command_needs_heredoc_for_execution(command) == expected
-
     # ========================= tests for methods that apply to Transformer subclasses
 
     def test_collect_transformer_methods(self):
@@ -125,7 +114,7 @@ class TestTransformer(TransformerTestCase):
         assert self.st.transform_more_liners(spec, '%prep', spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
-        ('looney\nlooney\n', '%{?scl:scl enable %{scl} "}\nlooney\n%{?scl:"}\n%{?scl:scl enable %{scl} "}\nlooney\n%{?scl:"}\n'),
+        ('looney\nlooney\n', scl_enable + 'looney\n' + scl_disable + scl_enable + 'looney\n' + scl_disable),
     ])
     def test_transformers_dont_apply_scl_enable_twice(self, spec, expected):
         assert self.st.transform_more_liners(spec, '%prep', spec) == expected

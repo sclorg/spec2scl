@@ -2,7 +2,7 @@ import pytest
 
 from spec2scl.transformers.R import RTransformer
 
-from tests.transformer_test_case import TransformerTestCase
+from tests.transformer_test_case import TransformerTestCase, scl_enable, scl_disable
 
 class TestRTransformer(TransformerTestCase):
     def setup_method(self, method):
@@ -17,8 +17,8 @@ class TestRTransformer(TransformerTestCase):
         assert self.get_pattern_for_spec(handler, spec) == None
 
     @pytest.mark.parametrize(('spec', 'expected'), [
-        ('R CMD foo bar', '%{?scl:scl enable %{scl} "}\nR CMD foo bar\n%{?scl:"}\n'),
-        ('%{__bindir}/R CMD foo bar\n', '%{?scl:scl enable %{scl} "}\n%{__bindir}/R CMD foo bar\n%{?scl:"}\n'),
+        ('R CMD foo bar', scl_enable + 'R CMD foo bar\n' + scl_disable),
+        ('%{__bindir}/R CMD foo bar\n', scl_enable + '%{__bindir}/R CMD foo bar\n' + scl_disable),
     ])
     def test_R_specific_commands_matching(self, spec, expected):
         spec = self.make_prep(spec)

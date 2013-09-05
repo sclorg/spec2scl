@@ -123,13 +123,8 @@ class Transformer(object):
         new_command = [None] * 3
         new_command[1] = command if command.endswith('\n') else command + '\n'
 
-        if self.command_needs_heredoc_for_execution(command):
-            new_command[0] = '%{?scl:scl enable %{scl} - << \EOF}\n'
-            new_command[2] = '%{?scl:EOF}\n'
-        else:
-            quotes_type = "'" if command.find('"') != -1 else '"'
-            new_command[0] = '%{{?scl:scl enable %{{scl}} {0}}}\n'.format(quotes_type)
-            new_command[2] = '%{{?scl:{0}}}\n'.format(quotes_type)
+        new_command[0] = '%{?scl:scl enable %{scl} - << \EOF}\n'
+        new_command[2] = '%{?scl:EOF}\n'
 
         return ''.join(new_command)
 
@@ -142,19 +137,3 @@ class Transformer(object):
             text = text.replace(command, self.sclize_one_command(command))
 
         return text
-
-    def command_needs_heredoc_for_execution(self, command):
-        """Returns true if the command needs heredoc for execution
-        Args:
-            command: string containing the whole command
-        Returns:
-            True if heredoc is needed (contains both single and double quotes or var assignment),
-            False otherwise
-        """
-        single_quotes = command.find("'")
-        double_quotes = command.find('"')
-
-        shell_var_assignment_re = re.compile(r'^\s*\w+=', re.MULTILINE)
-        contains_shell_var_assignment = shell_var_assignment_re.search(command)
-
-        return  True if contains_shell_var_assignment or (single_quotes != -1 and double_quotes != -1) else False

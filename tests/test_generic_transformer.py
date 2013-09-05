@@ -2,7 +2,7 @@ import pytest
 
 from spec2scl.transformers.generic import GenericTransformer
 
-from tests.transformer_test_case import TransformerTestCase
+from tests.transformer_test_case import TransformerTestCase, scl_enable, scl_disable
 
 class TestGenericTransformer(TransformerTestCase):
     def setup_method(self, method):
@@ -120,11 +120,11 @@ class TestGenericTransformer(TransformerTestCase):
         assert self.t.handle_meta_runtime_dep(spec, None, spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
-        ('configure\n', '%{?scl:scl enable %{scl} "}\nconfigure\n%{?scl:"}\n'),
-        ('%configure ', '%{?scl:scl enable %{scl} "}\n%configure \n%{?scl:"}\n'),
-        ('%configure --foo \\n --bar', '%{?scl:scl enable %{scl} "}\n%configure --foo \\n --bar\n%{?scl:"}\n'),
-        ('make ', '%{?scl:scl enable %{scl} "}\nmake \n%{?scl:"}\n'),
-        ('make foo\n', '%{?scl:scl enable %{scl} "}\nmake foo\n%{?scl:"}\n'),
+        ('configure\n', scl_enable + 'configure\n' + scl_disable),
+        ('%configure ', scl_enable + '%configure \n' + scl_disable),
+        ('%configure --foo \\n --bar', scl_enable + '%configure --foo \\n --bar\n' + scl_disable),
+        ('make ', scl_enable + 'make \n' + scl_disable),
+        ('make foo\n', scl_enable + 'make foo\n' + scl_disable),
     ])
     def test_handle_name_macro(self, spec, expected):
         spec = self.make_prep(spec)

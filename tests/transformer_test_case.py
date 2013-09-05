@@ -1,6 +1,9 @@
 from spec2scl import settings
 from spec2scl import specfile
 
+scl_enable = '%{?scl:scl enable %{scl} - << \EOF}\n'
+scl_disable = '%{?scl:EOF}\n'
+
 class TransformerTestCase(object):
     def make_prep(self, spec):
         # just create one of settings.RUNTIME_SECTIONS, so that we can test all the matching
