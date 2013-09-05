@@ -24,7 +24,7 @@ class GenericTransformer(transformer.Transformer):
         def handle_one_dep(matchobj):
             groupdict = matchobj.groupdict('')
 
-            scl_deps = self.options.get('scl_deps', True)
+            scl_deps = self.options['scl_deps']
 
             if scl_deps == True or (scl_deps_effect and scl_deps and groupdict['dep'] in scl_deps):
                 if groupdict['dep'].startswith('/'):
@@ -68,7 +68,7 @@ class GenericTransformer(transformer.Transformer):
 
     @matches(r'.*', one_line=False, sections=['%header'])
     def handle_meta_runtime_dep(self, original_spec, pattern, text):
-        if not self.options.get('meta_runtime_dep'):
+        if not self.options['meta_runtime_dep']:
             return text
         place_before_re = [re.compile(i, re.MULTILINE) for i in ['(^BuildRequires)', '(^Requires)', '(^Name)']]
 
