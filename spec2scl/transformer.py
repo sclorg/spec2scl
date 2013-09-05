@@ -3,13 +3,19 @@ import re
 from spec2scl import specfile
 
 class Transformer(object):
+    subtransformers = []
+
     def __init__(self, options={}):
         self.options = options
         self.options.setdefault('skip_functions', [])
         self.options.setdefault('meta_runtime_dep', False)
         self.options.setdefault('scl_deps', True)
-        self.subtransformers = list(map(lambda x: x(self.options), type(self).__subclasses__()))
         self.transformer_methods = self.collect_transformer_methods()
+
+    @classmethod
+    def register_transformer(cls, t):
+        cls.subtransformers.append(t)
+        return t
 
     def collect_transformer_methods(self):
         transformers = []
@@ -47,8 +53,10 @@ class Transformer(object):
 
         return section_text
 
-    def transform(self, original_spec):
+    def transform(self, original_spec, transformers=[]):
         spec = specfile.Specfile(original_spec)
+        import spec2scl.transformers
+        self.subtransformers = transformers or map(lambda c: c(), type(self).subtransformers)
         for subtrans in self.subtransformers:
             spec = subtrans._transform(original_spec, spec)
 

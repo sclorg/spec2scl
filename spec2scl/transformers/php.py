@@ -1,6 +1,7 @@
 from spec2scl import transformer
 from spec2scl.decorators import matches
 
+@transformer.Transformer.register_transformer
 class PHPTransformer(transformer.Transformer):
     def __init__(self, options={}):
         super(PHPTransformer, self).__init__(options)

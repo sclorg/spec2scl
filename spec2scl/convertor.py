@@ -1,5 +1,3 @@
-import spec2scl.transformers
-
 from spec2scl import transformer
 
 class Convertor(object):

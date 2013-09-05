@@ -4,6 +4,7 @@ from spec2scl.decorators import matches
 from spec2scl import settings
 from spec2scl import transformer
 
+@transformer.Transformer.register_transformer
 class GenericTransformer(transformer.Transformer):
     def __init__(self, options={}):
         super(GenericTransformer, self).__init__(options)

@@ -1,6 +1,7 @@
 from spec2scl import transformer
 from spec2scl.decorators import matches
 
+@transformer.Transformer.register_transformer
 class PythonTransformer(transformer.Transformer):
     def __init__(self, options={}):
         super(PythonTransformer, self).__init__(options)

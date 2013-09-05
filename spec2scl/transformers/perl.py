@@ -2,6 +2,7 @@ from spec2scl import settings
 from spec2scl import transformer
 from spec2scl.decorators import matches
 
+@transformer.Transformer.register_transformer
 class PerlTransformer(transformer.Transformer):
     def __init__(self, options={}):
         super(PerlTransformer, self).__init__(options)
