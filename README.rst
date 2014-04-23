@@ -33,7 +33,6 @@ Usage (print this by running spec2scl -h)::
       -m, --meta-runtime-dep
                             If used, runtime dependency on the scl runtime package
                             will be added. The dependency is not added by default.
-      -s, --stdin           Read specfile from stdin
       -k SKIP_FUNCTIONS, --skip-functions SKIP_FUNCTIONS
                             Comma separated list of transformer functions to skip
       -v VARIABLES, --variables VARIABLES

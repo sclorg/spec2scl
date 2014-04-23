@@ -39,11 +39,6 @@ def main():
                         help='If used, runtime dependency on the scl runtime package will be added. The dependency is not added by default.',
                         action='store_true'
                         )
-    parser.add_argument('-s', '--stdin',
-                        required=False,
-                        help='Read specfile from stdin',
-                        action='store_true'
-                        )
     parser.add_argument('-k', '--skip-functions',
                         required=False,
                         default="",
@@ -72,10 +67,10 @@ def main():
     if len(args.specfiles) > 1 and not args.i:
         parser.error('You can only convert more specfiles using -i (in place) mode.')
 
-    if len(args.specfiles) == 0 and not args.stdin:
+    if len(args.specfiles) == 0 and sys.stdin.isatty():
         parser.error('You must either specify specfile(s) or reading from stdin.')
 
-    if len(args.specfiles) > 0 and args.stdin:
+    if len(args.specfiles) > 0 and not sys.stdin.isatty():
         parser.error(
             'You must either specify specfile(s) or reading from stdin, not both.')
 
@@ -98,7 +93,7 @@ def main():
                 print('Could not open file: {0}'.format(e))
                 sys.exit(1)
 
-    if args.stdin:
+    if not sys.stdin.isatty():
         specs.append(sys.stdin.readlines())
 
     for spec in specs:
