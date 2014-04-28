@@ -1,3 +1,10 @@
+1.1.0
+- New co-maintainer
+- Add --meta-specfile option to generate meta specfile based on meta name
+- Make reading from stdin default
+- Recognize %gem_install macro in ruby specfiles
+- Ignore file based requires when prefixing with %{?scl_prefix} macro
+
 1.0.1
 - If the matched transformed command doesn't end with newline, then add it.
 - Fix writing Specfile objects to files with "-i" option.
