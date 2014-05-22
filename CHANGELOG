@@ -1,3 +1,6 @@
+1.1.0a
+- Include templates in source tarball
+
 1.1.0
 - New co-maintainer
 - Add --meta-specfile option to generate meta specfile based on meta name
