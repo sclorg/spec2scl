@@ -1,5 +1,6 @@
 include CHANGELOG
 include LICENSE
 include README.rst
+include spec2scl/templates/*
 recursive-include tests *.py
 recursive-exclude tests *.pyc

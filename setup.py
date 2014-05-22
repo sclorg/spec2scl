@@ -43,6 +43,7 @@ setup(
     url='https://bitbucket.org/bkabrda/spec2scl/',
     license='MIT',
     packages=find_packages(exclude=['tests']),
+    package_data={'spec2scl': ['templates/*.spec']},
     setup_requires=['pytest',
                     'flexmock >= 0.9.3'
                     ] + install_requires,
