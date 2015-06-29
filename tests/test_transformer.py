@@ -139,3 +139,7 @@ class TestTransformer(TransformerTestCase):
     ])
     def test_transformer_only_applies_to_specified_sections(self, spec, expected):
         assert str(self.st._transform(spec, Specfile(spec))) == expected
+
+    def test_transformer_skips_transformer_functions_if_requested(self):
+        t = Transformer(options={'skip_functions': ['handle_foo', 'insert_scl_init']})
+        assert str(t.transform('foo')) == 'foo'
