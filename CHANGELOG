@@ -1,3 +1,6 @@
+1.1.2
+- Pass options through to subtransformers (thanks Mat Booth for patch).
+
 1.1.1
 - Bumped to obsolete previous wrong "1.1.0 -> 1.1.0a" update
 
