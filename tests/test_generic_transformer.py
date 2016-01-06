@@ -59,9 +59,11 @@ class TestGenericTransformer(TransformerTestCase):
         ('Requires: spam > 1, spam < 3', True, 'Requires: %{?scl_prefix}spam > 1, %{?scl_prefix}spam < 3'),
         ('BuildRequires: python-%{spam}', True, 'BuildRequires: %{?scl_prefix}python-%{spam}'),
         ('BuildRequires: python-%{spam}', False, 'BuildRequires: python-%{spam}'),
-        ('Requires: spam > 1, spam < 3', ['eggs'], 'Requires: spam > 1, spam < 3'),
-        ('Requires: spam > 1, spam < 3', ['spam'], 'Requires: %{?scl_prefix}spam > 1, %{?scl_prefix}spam < 3'),
-        ('BuildRequires: python(spam)', ['python(spam)', 'spam'], 'BuildRequires: %{?scl_prefix}python(spam)'),
+        ('Requires: spam > 1, spam < 3', {'eggs': ''}, 'Requires: spam > 1, spam < 3'),
+        ('Requires: spam > 1, spam < 3', {'spam': ''}, 'Requires: %{?scl_prefix}spam > 1, %{?scl_prefix}spam < 3'),
+        ('BuildRequires: python(spam)', {'python(spam)': '', 'spam': ''}, 'BuildRequires: %{?scl_prefix}python(spam)'),
+        ('BuildRequires: python(spam)', {'python(spam)': '%{?scl_prefix_python27}'}, 'BuildRequires: %{?scl_prefix_python27}python(spam)'),
+        ('BuildRequires: spam', {'egg': '%{?scl_prefix_python27}'}, 'BuildRequires: spam'),
     ])
     def test_handle_dependency_tag_modified_scl_deps(self, spec, scl_deps, expected):
         handler = self.t.handle_dependency_tag_modified_by_list
