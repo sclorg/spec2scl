@@ -4,6 +4,7 @@ from spec2scl.transformers.ruby import RubyTransformer
 
 from tests.transformer_test_case import TransformerTestCase, scl_enable, scl_disable
 
+
 class TestRubyTransformer(TransformerTestCase):
     def setup_method(self, method):
         self.t = RubyTransformer({})

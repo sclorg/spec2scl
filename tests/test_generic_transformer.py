@@ -4,6 +4,7 @@ from spec2scl.transformers.generic import GenericTransformer
 
 from tests.transformer_test_case import TransformerTestCase, scl_enable, scl_disable
 
+
 class TestGenericTransformer(TransformerTestCase):
     def setup_method(self, method):
         self.t = GenericTransformer({})
@@ -15,7 +16,7 @@ class TestGenericTransformer(TransformerTestCase):
         ('Name: python-%{spam}', '%{?scl:%scl_package python-%{spam}}\n%{!?scl:%global pkg_name %{name}}'),
     ])
     def test_insert_scl_init(self, spec, expected):
-        self.t.original_spec = spec # need to assign it here, because Name is taken from original spec
+        self.t.original_spec = spec  # need to assign it here, because Name is taken from original spec
         assert self.t.insert_scl_init(spec, self.t.insert_scl_init.matches[0], spec).find(expected) != -1
 
     @pytest.mark.parametrize(('spec', 'expected'), [
@@ -34,7 +35,7 @@ class TestGenericTransformer(TransformerTestCase):
         ('Requires: perl(:MODULE_COMPAT_%(eval "`perl -V:version`"; echo $version))',
          'Requires: %{?scl_prefix}perl(:MODULE_COMPAT_%(eval "`perl -V:version`"; echo $version))'),
         # this test case will fail, we would need something more powerful than regexps to parse nested braces
-        #('Requires: spam(foo()) = 1 bar(foo()) = 2', 'a', 'Requires: %{?scl_prefix}spam(foo()) = 1 %{?scl_prefix}bar(foo()) = 2'),
+        # ('Requires: spam(foo()) = 1 bar(foo()) = 2', 'a', 'Requires: %{?scl_prefix}spam(foo()) = 1 %{?scl_prefix}bar(foo()) = 2'),
 
     ])
     def test_handle_dependency_tag_with_spaces_in_brackets(self, spec, expected):

@@ -1,8 +1,10 @@
 from spec2scl import settings
 from spec2scl import specfile
 
+
 scl_enable = '%{?scl:scl enable %{scl} - << \EOF}\n'
 scl_disable = '%{?scl:EOF}\n'
+
 
 class TransformerTestCase(object):
     def make_prep(self, spec):
@@ -15,4 +17,3 @@ class TransformerTestCase(object):
             for i, pattern in enumerate(handler.matches):
                 if pattern.search(s_text) and s_name in handler.sections[i]:
                     return pattern
-
