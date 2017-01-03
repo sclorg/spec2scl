@@ -111,7 +111,7 @@ class TestTransformer(TransformerTestCase):
         ('spam\nspam\nfoo\nfoo', 'handled global\nspam\nhandled global\nfoo'),
         ('spam\nxspam', 'spam\nxspam'),
     ])
-    def test_transform_one_liners(self, spec, expected):
+    def test_transform_more_liners(self, spec, expected):
         assert self.st.transform_more_liners(spec, '%prep', spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
