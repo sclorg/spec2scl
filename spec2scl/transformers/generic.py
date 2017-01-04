@@ -70,16 +70,18 @@ class GenericTransformer(transformer.Transformer):
         return pattern.sub(r'%{pkg_name}', text)
 
     @matches(r'.*', one_line=False, sections=['%header'])
-    def handle_meta_runtime_dep(self, original_spec, pattern, text):
-        if not self.options['meta_runtime_dep']:
-            return text
-        place_before_re = [re.compile(i, re.MULTILINE) for i in ['(^BuildRequires)', '(^Requires)', '(^Name)']]
+    def handle_meta_deps(self, original_spec, pattern, text):
+        runtime_dep = '' if self.options['no_meta_runtime_dep'] else '%{?scl:Requires: %{scl}-runtime}\n'
+        buildtime_dep = '' if self.options['no_meta_buildtime_dep'] else '%{?scl:BuildRequires: %{scl}-runtime}\n'
 
-        for pb in place_before_re:
-            match = pb.search(text)
-            if match:
-                index = match.start(0)
-                return '{0}%{{?scl:Requires: %{{scl}}-runtime}}\n{1}'.format(text[:index], text[index:])
+        if runtime_dep or buildtime_dep:
+            place_before_re = [re.compile(i, re.MULTILINE) for i in ['(^BuildRequires)', '(^Requires)', '(^Name)']]
+            for pb in place_before_re:
+                match = pb.search(text)
+                if match:
+                    index = match.start(0)
+                    return '{0}{1}{2}{3}'.format(text[:index], runtime_dep, buildtime_dep, text[index:])
+        return text
 
     @matches(r'^%?configure\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
     @matches(r'^make\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
