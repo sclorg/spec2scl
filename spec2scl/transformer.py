@@ -101,11 +101,8 @@ class Transformer(object):
         """
         # TODO: this is getting ugly, refactor
         commands = []
-        while(True):
+        for match in pattern.finditer(''.join(text)):
             # find the matched string (usually beginning of command) inside text
-            match = pattern.search(''.join(text))
-            if not match:
-                break
             matched = match.group(0)
             if matched.endswith('\n'):
                 # if matched ends with newline, then we might have got e.g.
@@ -119,17 +116,16 @@ class Transformer(object):
             index = match.start(0)
             previous_newline = text.rfind('\n', 0, index)
             # don't start from the matched pattern, but from the beginning of its line
-            text = text[previous_newline if previous_newline != -1 else 0:]
-            for line in text.splitlines(True):
+            stripped_text = text[previous_newline if previous_newline != -1 else 0:]
+            for line in stripped_text.splitlines(True):
                 if line.find(matched) != -1:
                     append = True
                 if append:
                     whole_command.append(line)
-                if append and not line.rstrip().endswith('\\'):
-                    break  # sorry :)
+                    if not line.rstrip().endswith('\\'):
+                        break  # sorry :)
 
             command = ''.join(whole_command)
-            text = text[len(command):]  # so that we don't find it again
             comment_index = command.find('#')
             # only append if not matched
             if comment_index == -1 or command.find(matched) < comment_index:
@@ -138,13 +134,11 @@ class Transformer(object):
         return commands
 
     def sclize_one_command(self, command):
-        new_command = [None] * 3
-        new_command[1] = command if command.endswith('\n') else command + '\n'
-
-        new_command[0] = '%{?scl:scl enable %{scl} - << \EOF}\n'
-        new_command[2] = '%{?scl:EOF}\n'
-
-        return ''.join(new_command)
+        return '{0}{1}{2}'.format(
+            '%{?scl:scl enable %{scl} - << \EOF}\n',
+            command if command.endswith('\n') else command + '\n',
+            '%{?scl:EOF}\n'
+        )
 
     def sclize_all_commands(self, pattern, text):
         commands = self.find_whole_commands(pattern, text)
