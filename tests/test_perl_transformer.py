@@ -4,6 +4,7 @@ from spec2scl.transformers.perl import PerlTransformer
 
 from tests.transformer_test_case import TransformerTestCase
 
+
 class TestPerlTransformer(TransformerTestCase):
     def setup_method(self, method):
         self.t = PerlTransformer({})

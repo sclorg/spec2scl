@@ -1,11 +1,25 @@
-*.mo
-*.pyc
-*.swo
-*.swp
-*.swn
-*~
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+
+# Distribution / packaging
+env/
 build/
 dist/
-spec2scl.egg-info
+.eggs/
+*.egg-info/
+
+# Local data
 MANIFEST
 mybin.py
+
+# Temporary data
+*.sw[opn]
+*~
+
+# Translations
+*.mo
+
+# Unit test
+.tox/
+.cache/

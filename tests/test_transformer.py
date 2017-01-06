@@ -1,5 +1,4 @@
-#TODO: use mocking to test functions in isolation
-import itertools
+# TODO: use mocking to test functions in isolation
 import re
 
 import pytest
@@ -10,6 +9,7 @@ from spec2scl.transformer import Transformer
 from spec2scl.specfile import Specfile
 
 from tests.transformer_test_case import TransformerTestCase, scl_enable, scl_disable
+
 
 class SpamTransformer(Transformer):
     """This is a testing class to test various Transformer methods"""
@@ -49,6 +49,7 @@ class SpamTransformer(Transformer):
                                 r'looney', r'ham\s+'])
     _transformer_one_liners = 2
     _transformer_more_liners = 4
+
 
 class TestTransformer(TransformerTestCase):
     def setup_method(self, method):
@@ -110,7 +111,7 @@ class TestTransformer(TransformerTestCase):
         ('spam\nspam\nfoo\nfoo', 'handled global\nspam\nhandled global\nfoo'),
         ('spam\nxspam', 'spam\nxspam'),
     ])
-    def test_transform_one_liners(self, spec, expected):
+    def test_transform_more_liners(self, spec, expected):
         assert self.st.transform_more_liners(spec, '%prep', spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
@@ -124,7 +125,7 @@ class TestTransformer(TransformerTestCase):
         # therefore it won't get found in lines.split in find_whole_commands
         # (well, it didn't, now it works)
         self.st.transform_more_liners('ham\n\n', '%prep', 'ham\n\n')
-        assert True # if it didn't end in endless loop, we're fine
+        assert True  # if it didn't end in endless loop, we're fine
 
     @pytest.mark.parametrize(('spec'), [
         ('# ham\n'),

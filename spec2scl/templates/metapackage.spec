@@ -85,7 +85,7 @@ EOF
 %scl_install
 
 
-# Create the scldevel subpackage macros                                                             
+# Create the scldevel subpackage macros
 {% raw %}
 cat >> %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel << EOF
 %%scl_%{scl_name_base} %{scl}
