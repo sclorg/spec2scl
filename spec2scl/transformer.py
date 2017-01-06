@@ -12,7 +12,8 @@ class Transformer(object):
     def __init__(self, options={}):
         self.options = options
         self.options.setdefault('skip_functions', [])
-        self.options.setdefault('meta_runtime_dep', False)
+        self.options.setdefault('no_meta_runtime_dep', False)
+        self.options.setdefault('no_meta_buildtime_dep', False)
         self.options.setdefault('scl_deps', True)
         self.transformer_methods = self.collect_transformer_methods()
 

@@ -12,9 +12,9 @@ To get more info about Software Collections, see:
 Usage (print this by running spec2scl -h)::
 
 
-    usage: spec2scl [-h] [--meta-specfile] [-i] [-m] [-s] [-k SKIP_FUNCTIONS]
-                        [-v VARIABLES] [-n | -l SCL_CONTENTS_LIST]
-                        [ARGUMENT [ARGUMENT ...]]
+    usage: spec2scl [-h] [--meta-specfile] [-i] [-r] [-b] [-k SKIP_FUNCTIONS]
+                    [-v VARIABLES] [-n | -l SCL_CONTENTS_LIST]
+                    [ARGUMENT [ARGUMENT ...]]
 
     Convert RPM specfile to be SCL ready.
 
@@ -30,9 +30,12 @@ Usage (print this by running spec2scl -h)::
       -i                    Convert in place (replaces old specfiles with the new
                             generated ones). Mandatory when multiple specfiles are
                             to be converted.
-      -m, --meta-runtime-dep
-                            If used, runtime dependency on the scl runtime package
-                            will be added. The dependency is not added by default.
+      -r, --no-meta-runtime-dep
+                            Don't add the runtime dependency on the scl runtime
+                            package.
+      -b, --no-meta-buildtime-dep
+                            Don't add the buildtime dependency on the scl runtime
+                            package.
       -k SKIP_FUNCTIONS, --skip-functions SKIP_FUNCTIONS
                             Comma separated list of transformer functions to skip
       -v VARIABLES, --variables VARIABLES

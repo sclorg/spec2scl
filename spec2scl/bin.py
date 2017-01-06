@@ -34,9 +34,14 @@ def main():
                         required=False,
                         action='store_true'
                         )
-    parser.add_argument('-m', '--meta-runtime-dep',
+    parser.add_argument('-r', '--no-meta-runtime-dep',
                         required=False,
-                        help='If used, runtime dependency on the scl runtime package will be added. The dependency is not added by default.',
+                        help='Don\'t add the runtime dependency on the scl runtime package.',
+                        action='store_true'
+                        )
+    parser.add_argument('-b', '--no-meta-buildtime-dep',
+                        required=False,
+                        help='Don\'t add the buildtime dependency on the scl runtime package.',
                         action='store_true'
                         )
     parser.add_argument('-k', '--skip-functions',
@@ -98,7 +103,8 @@ def main():
 
     for spec in specs:
         options = {'scl_deps': scl_deps,
-                   'meta_runtime_dep': args.meta_runtime_dep,
+                   'no_meta_runtime_dep': args.no_meta_runtime_dep,
+                   'no_meta_buildtime_dep': args.no_meta_buildtime_dep,
                    'skip_functions': args.skip_functions.split(','),
                    'variables': args.variables,
                    'meta_spec': args.meta_specfile}

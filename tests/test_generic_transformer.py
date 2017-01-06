@@ -112,13 +112,16 @@ class TestGenericTransformer(TransformerTestCase):
     def test_handle_name_macro(self, spec, expected):
         assert self.t.handle_name_macro(spec, self.t.handle_name_macro.matches[0], spec) == expected
 
-    @pytest.mark.parametrize(('spec', 'meta_runtime_dep', 'expected'), [
-        ('Requires:', False, 'Requires:'),
-        ('Requires:', True, '%{?scl:Requires: %{scl}-runtime}\nRequires:'),
+    @pytest.mark.parametrize(('spec', 'no_meta_runtime_dep', 'no_meta_buildtime_dep', 'expected'), [
+        ('Requires:', True, True, 'Requires:'),
+        ('Requires:', False, True, '%{?scl:Requires: %{scl}-runtime}\nRequires:'),
+        ('Requires:', True, False, '%{?scl:BuildRequires: %{scl}-runtime}\nRequires:'),
+        ('Requires:', False, False, '%{?scl:Requires: %{scl}-runtime}\n%{?scl:BuildRequires: %{scl}-runtime}\nRequires:'),
     ])
-    def test_handle_meta_runtime_dep(self, spec, meta_runtime_dep, expected):
-        self.t.options['meta_runtime_dep'] = meta_runtime_dep
-        assert self.t.handle_meta_runtime_dep(spec, None, spec) == expected
+    def test_handle_meta_deps(self, spec, no_meta_runtime_dep, no_meta_buildtime_dep, expected):
+        self.t.options['no_meta_runtime_dep'] = no_meta_runtime_dep
+        self.t.options['no_meta_buildtime_dep'] = no_meta_buildtime_dep
+        assert self.t.handle_meta_deps(spec, None, spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('configure\n', scl_enable + 'configure\n' + scl_disable),
