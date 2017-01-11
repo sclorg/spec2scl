@@ -23,13 +23,17 @@ class TestGenericTransformer(TransformerTestCase):
         ('Conflicts:spam', 'Conflicts:%{?scl_prefix}spam'),
         ('BuildConflicts: \t spam', 'BuildConflicts: \t %{?scl_prefix}spam'),
         ('Provides: spam < 3.0', 'Provides: %{?scl_prefix}spam < 3.0'),
+        ('Provides: bundled(libname)', 'Provides: bundled(libname)'),
         ('Conflicts: spam > 2.0-1', 'Conflicts: %{?scl_prefix}spam > 2.0-1'),
         ('Obsoletes: spam, blah, foo', 'Obsoletes: %{?scl_prefix}spam, %{?scl_prefix}blah, %{?scl_prefix}foo'),
         ('Obsoletes: spam blah foo', 'Obsoletes: %{?scl_prefix}spam %{?scl_prefix}blah %{?scl_prefix}foo'),
     ])
     def test_handle_dependency_tag(self, spec, expected):
-        handler = self.t.handle_dependency_tag
-        assert self.t.handle_dependency_tag(spec, self.get_pattern_for_spec(handler, spec), spec) == expected
+        pattern = self.get_pattern_for_spec(self.t.handle_dependency_tag, spec)
+        if pattern:
+            assert self.t.handle_dependency_tag(spec, pattern, spec) == expected
+        else:
+            assert spec == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('Requires: perl(:MODULE_COMPAT_%(eval "`perl -V:version`"; echo $version))',

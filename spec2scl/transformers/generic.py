@@ -17,7 +17,7 @@ class GenericTransformer(transformer.Transformer):
 
     @matches(r'(?<!d)(Conflicts:\s*)([^\s]+)', sections=settings.METAINFO_SECTIONS)  # avoid BuildConflicts
     @matches(r'(BuildConflicts:\s*)([^\s]+)', sections=settings.METAINFO_SECTIONS)
-    @matches(r'(Provides:\s*)([^\s]+)', sections=settings.METAINFO_SECTIONS)
+    @matches(r'(Provides:\s*)(?!bundled\()([^\s]+)', sections=settings.METAINFO_SECTIONS)
     @matches(r'(Obsoletes:\s*)([^\s]+)', sections=settings.METAINFO_SECTIONS)
     def handle_dependency_tag(self, original_spec, pattern, text, scl_deps_effect=False):
         tag = text[0:text.find(':') + 1]
@@ -45,7 +45,7 @@ class GenericTransformer(transformer.Transformer):
     @matches(r'(?<!d)(Requires:\s*)(?!\w*/\w*)([^[\s]+)', sections=settings.METAINFO_SECTIONS)  # avoid BuildRequires
     @matches(r'(BuildRequires:\s*)(?!\w*/\w*)([^\s]+)', sections=settings.METAINFO_SECTIONS)
     def handle_dependency_tag_modified_by_list(self, original_spec, pattern, text):
-        return self.handle_dependency_tag(pattern, original_spec, text, True)
+        return self.handle_dependency_tag(original_spec, pattern, text, True)
 
     @matches(r'(%package\s+-n\s+)([^\s]+)', sections=['%package'])
     @matches(r'(%description\s+-n\s+)([^\s]+)', sections=['%description'])
