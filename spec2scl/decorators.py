@@ -4,6 +4,9 @@ from spec2scl import settings
 
 
 def matches(pattern, one_line=True, sections=settings.RUNTIME_SECTIONS, flags=0):
+    """Convert the provided arguments into attributes of the function object,
+    which are further processed by the base transformer class.
+    """
     if not one_line:
         flags = re.MULTILINE
 

@@ -18,6 +18,7 @@ def handle_scl_deps(no_deps_convert, args_list_file):
 
 
 def main():
+    """Main CLI entry point."""
     parser = argparse.ArgumentParser(description='Convert RPM specfile to be SCL ready.')
     parser.add_argument('specfiles',
                         help='Paths to the specfiles or name of the meta package, see --meta-specfile.',

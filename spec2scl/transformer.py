@@ -7,6 +7,13 @@ from spec2scl import specfile
 
 
 class Transformer(object):
+
+    """A base Transformer class.
+
+    Converts tags and macro definitions in a conventional
+    spec file into a Software Collection spec file.
+    """
+
     subtransformers = []
 
     def __init__(self, options={}):
@@ -23,6 +30,11 @@ class Transformer(object):
         return t
 
     def collect_transformer_methods(self):
+        """Return a list of methods decorated with matches.
+
+        Returns:
+            list of tuple of (<method>, <pattern>, <one line>, <sections>)
+        """
         transformers = []
 
         for v in vars(type(self)).values():
@@ -30,7 +42,6 @@ class Transformer(object):
                 for i in range(len(v.matches)):
                     transformers.append(
                         (getattr(self, v.__name__), v.matches[i], v.one_line[i], v.sections[i]))
-
         return transformers
 
     def transform_one_liners(self, original_spec, section_name, section_text):
@@ -60,6 +71,11 @@ class Transformer(object):
         return section_text
 
     def transform(self, original_spec, transformers=[]):
+        """Initialize spec2scl.transformers and perform conversion
+        by each subtransformer.
+        Returns:
+            converted spec file as a Specfile object
+        """
         spec = specfile.Specfile(original_spec)
         import spec2scl.transformers
         self.subtransformers = transformers or map(
