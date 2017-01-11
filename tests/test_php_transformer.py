@@ -17,5 +17,6 @@ class TestPHPTransformer(TransformerTestCase):
     ])
     def test_php_specific_commands_matching(self, spec, expected):
         spec = self.make_prep(spec)
-        handler = self.t.handle_php_specific_commands
-        assert self.t.handle_php_specific_commands(spec, self.get_pattern_for_spec(handler, spec), spec) == self.make_prep(expected)
+        pattern = self.get_pattern_for_spec(self.t.handle_php_specific_commands, spec)
+        assert pattern
+        assert self.t.handle_php_specific_commands(spec, pattern, spec) == self.make_prep(expected)

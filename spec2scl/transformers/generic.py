@@ -83,7 +83,7 @@ class GenericTransformer(transformer.Transformer):
                     return '{0}{1}{2}{3}'.format(text[:index], runtime_dep, buildtime_dep, text[index:])
         return text
 
-    @matches(r'^%?configure\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
-    @matches(r'^make\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
+    @matches(r'^\s*%?configure\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
+    @matches(r'^\s*make\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
     def handle_configure_make(self, original_spec, pattern, text):
         return self.sclize_all_commands(pattern, text)
