@@ -130,6 +130,7 @@ class TestTransformer(TransformerTestCase):
     @pytest.mark.parametrize(('spec'), [
         ('# ham\n'),
         ('blahblah # ham\n'),
+        ('# %%gem_install - this is a comment'),
     ])
     def test_ignores_commented_commands(self, spec):
         assert 'enable' not in self.t.transform(spec)

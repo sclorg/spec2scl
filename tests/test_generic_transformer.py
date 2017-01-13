@@ -133,8 +133,10 @@ class TestGenericTransformer(TransformerTestCase):
         ('%configure --foo \\n --bar', scl_enable + '%configure --foo \\n --bar\n' + scl_disable),
         ('make ', scl_enable + 'make \n' + scl_disable),
         ('make foo\n', scl_enable + 'make foo\n' + scl_disable),
+        ('  make foo\n', scl_enable + '  make foo\n' + scl_disable),
     ])
     def test_handle_configure_make(self, spec, expected):
         spec = self.make_prep(spec)
-        handler = self.t.handle_configure_make
-        assert self.t.handle_configure_make(spec, self.get_pattern_for_spec(handler, spec), spec) == self.make_prep(expected)
+        pattern = self.get_pattern_for_spec(self.t.handle_configure_make, spec)
+        assert pattern
+        assert self.t.handle_configure_make(spec, pattern, spec) == self.make_prep(expected)

@@ -12,7 +12,7 @@ class RubyTransformer(transformer.Transformer):
              one_line=False,
              sections=settings.RUNTIME_SECTIONS)  # not to match string like "rubygem install"
     @matches(r'%gem_install\s*', one_line=False, sections=settings.RUNTIME_SECTIONS)
-    @matches(r'^ruby\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
+    @matches(r'^\s*ruby\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
     @matches(r'testrb\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
     @matches(r'testrb2\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
     @matches(r'(?<![-.])rspec\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)

@@ -4,6 +4,7 @@ from spec2scl.transformers.python import PythonTransformer
 
 from tests.transformer_test_case import TransformerTestCase, scl_enable, scl_disable
 
+
 class TestPythonTransformer(TransformerTestCase):
     def setup_method(self, method):
         self.t = PythonTransformer({})
@@ -16,5 +17,6 @@ class TestPythonTransformer(TransformerTestCase):
     ])
     def test_python_specific_commands_matching(self, spec, expected):
         spec = self.make_prep(spec)
-        handler = self.t.handle_python_specific_commands
-        assert self.t.handle_python_specific_commands(spec, self.get_pattern_for_spec(handler, spec), spec) == self.make_prep(expected)
+        pattern = self.get_pattern_for_spec(self.t.handle_python_specific_commands, spec)
+        assert pattern
+        assert self.t.handle_python_specific_commands(spec, pattern, spec) == self.make_prep(expected)

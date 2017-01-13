@@ -1,3 +1,14 @@
+"""Package initialization.
+
+Basically equivalent to:
+from spec2scl.transformers import generic
+from spec2scl.transformers import perl
+from spec2scl.transformers import php
+from spec2scl.transformers import python
+from spec2scl.transformers import R
+from spec2scl.transformers import ruby
+"""
+
 import importlib
 import os
 
