@@ -9,11 +9,12 @@ def handle_scl_deps(no_deps_convert, args_list_file):
     if no_deps_convert:
         scl_deps = False
     elif args_list_file:
-        scl_deps = []
+        scl_deps = {}
         with open(args_list_file) as l:
             for i in l.readlines():
-                scl_deps.append(i.strip())
-
+                pair = i.split()
+                if pair:
+                    scl_deps[pair[0]] = pair[1] if len(pair) >= 2 else ''
     return scl_deps
 
 
@@ -64,7 +65,8 @@ def main():
                      )
     grp.add_argument('-l', '--list-file',
                      required=False,
-                     help='List of the packages/provides, that will be in the SCL (to convert Requires/BuildRequires properly).',
+                     help=('List of the packages/provides, that will be in the SCL (to convert Requires/BuildRequires properly). '
+                           'Lines in the file are in form of "pkg-name %%{?custom_prefix}", where the prefix part is optional.'),
                      metavar='SCL_CONTENTS_LIST'
                      )
 

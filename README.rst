@@ -46,7 +46,9 @@ Usage (print this by running spec2scl -h)::
                             -l).
       -l SCL_CONTENTS_LIST, --list-file SCL_CONTENTS_LIST
                             List of the packages/provides, that will be in the SCL
-                            (to convert Requires/BuildRequires properly).
+                            (to convert Requires/BuildRequires properly). Lines in
+                            the file are in form of "pkg-name %{?custom_prefix}",
+                            where the prefix part is optional.
 
 
 

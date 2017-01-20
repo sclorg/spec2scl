@@ -30,10 +30,17 @@ class GenericTransformer(transformer.Transformer):
             scl_deps = self.options['scl_deps']
 
             if scl_deps == True or (scl_deps_effect and scl_deps and groupdict['dep'] in scl_deps):
-                if groupdict['dep'].startswith('/'):
-                    dep = '%{{?_scl_root}}{0}'.format(groupdict['dep'])
-                else:
-                    dep = '%{{?scl_prefix}}{0}'.format(groupdict['dep'])
+                prefix = ''
+                if isinstance(scl_deps, dict):
+                    prefix = scl_deps[groupdict['dep']]
+
+                if not prefix:
+                    if groupdict['dep'].startswith('/'):
+                        prefix = '%{?_scl_root}'
+                    else:
+                        prefix = '%{?scl_prefix}'
+
+                dep = '{0}{1}'.format(prefix, groupdict['dep'])
             else:
                 dep = groupdict['dep']
 
