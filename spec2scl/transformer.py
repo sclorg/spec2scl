@@ -117,8 +117,11 @@ class Transformer(object):
         """
         # TODO: this is getting ugly, refactor
         commands = []
-        for match in pattern.finditer(''.join(text)):
+        while(True):
             # find the matched string (usually beginning of command) inside text
+            match = pattern.search(''.join(text))
+            if not match:
+                break
             matched = match.group(0)
             if matched.endswith('\n'):
                 # if matched ends with newline, then we might have got e.g.
@@ -132,16 +135,17 @@ class Transformer(object):
             index = match.start(0)
             previous_newline = text.rfind('\n', 0, index)
             # don't start from the matched pattern, but from the beginning of its line
-            stripped_text = text[previous_newline if previous_newline != -1 else 0:]
-            for line in stripped_text.splitlines(True):
+            text = text[previous_newline if previous_newline != -1 else 0:]
+            for line in text.splitlines(True):
                 if line.find(matched) != -1:
                     append = True
                 if append:
                     whole_command.append(line)
-                    if not line.rstrip().endswith('\\'):
-                        break  # sorry :)
+                if append and not line.rstrip().endswith('\\'):
+                    break  # sorry :)
 
             command = ''.join(whole_command)
+            text = text[len(command):]  # so that we don't find it again
             comment_index = command.find('#')
             # only append if not matched
             if comment_index == -1 or command.find(matched) < comment_index:
