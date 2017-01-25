@@ -6,6 +6,10 @@ import time
 from spec2scl import specfile
 
 
+SCL_ENABLE = '%{?scl:scl enable %{scl} - << \EOF}\nset -e\n'
+SCL_DISABLE = '%{?scl:EOF}\n'
+
+
 class Transformer(object):
 
     """A base Transformer class.
@@ -83,6 +87,10 @@ class Transformer(object):
         for subtrans in self.subtransformers:
             spec = subtrans._transform(original_spec, spec)
 
+        spec.sections = [
+            (section[0], self.merge_sclized_commands(section[1]))
+            for section in spec.sections]
+
         return spec
 
     def _transform(self, original_spec, spec):
@@ -147,9 +155,9 @@ class Transformer(object):
 
     def sclize_one_command(self, command):
         return '{0}{1}{2}'.format(
-            '%{?scl:scl enable %{scl} - << \EOF}\n',
+            SCL_ENABLE,
             command if command.endswith('\n') else command + '\n',
-            '%{?scl:EOF}\n'
+            SCL_DISABLE
         )
 
     def sclize_all_commands(self, pattern, text):
@@ -162,6 +170,10 @@ class Transformer(object):
             text = text.replace(command, self.sclize_one_command(command))
 
         return text
+
+    def merge_sclized_commands(self, text):
+        """Merge subsequent sclized commands into one sclized section."""
+        return ''.join(text.split(SCL_DISABLE + SCL_ENABLE))
 
 
 class MetaTransformer(object):

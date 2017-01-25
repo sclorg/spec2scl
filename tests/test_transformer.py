@@ -134,9 +134,10 @@ class TestTransformer(TransformerTestCase):
         ('# ham\n'),
         ('blahblah # ham\n'),
         ('# %%gem_install - this is a comment'),
+        ('%prep\n# ham\n\n'),
     ])
     def test_ignores_commented_commands(self, spec):
-        assert 'enable' not in self.t.transform(spec)
+        assert 'enable' not in self.t.transform(spec, transformers=[SpamTransformer()])
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('spam', 'spam'),
@@ -148,3 +149,12 @@ class TestTransformer(TransformerTestCase):
     def test_transformer_skips_transformer_functions_if_requested(self):
         t = Transformer(options={'skip_functions': ['handle_foo', 'insert_scl_init']})
         assert str(t.transform('foo')) == 'foo'
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('%build\nham \nlooney\n', '%build\n{0}ham \nlooney\n{1}'.format(scl_enable, scl_disable)),
+        ('%prep\nlooney\nlooney\n\n', '%prep\n{0}looney\nlooney\n{1}'.format(scl_enable, scl_disable)),
+        ('%build\nham \\\nham\nlooney\n', '%build\n{0}ham \\\nham\nlooney\n{1}'.format(scl_enable, scl_disable)),
+    ])
+    def test_transformer_wraps_whole_sections_in_scl_enable(self, spec, expected):
+        transformed = self.t.transform(spec, transformers=[SpamTransformer()])
+        assert str(transformed) == expected
