@@ -117,39 +117,31 @@ class Transformer(object):
         """
         # TODO: this is getting ugly, refactor
         commands = []
-        while(True):
+
+        while text:
             # find the matched string (usually beginning of command) inside text
             match = pattern.search(''.join(text))
             if not match:
-                break
-            matched = match.group(0)
-            if matched.endswith('\n'):
-                # if matched ends with newline, then we might have got e.g.
-                # 'make\n\n', but that will not work because we are splitting
-                # lines below, so we can only match one newline at the end
-                matched = matched.rstrip('\n') + '\n'
+                return commands
 
-            append = False
-            whole_command = []
             # now use it to get the whole command
-            index = match.start(0)
-            previous_newline = text.rfind('\n', 0, index)
+            previous_newline = text.rfind('\n', 0, match.start(0))
             # don't start from the matched pattern, but from the beginning of its line
-            text = text[previous_newline if previous_newline != -1 else 0:]
+            text = text[previous_newline + 1:]
+            whole_comamnd = []
             for line in text.splitlines(True):
-                if line.find(matched) != -1:
-                    append = True
-                if append:
-                    whole_command.append(line)
-                if append and not line.rstrip().endswith('\\'):
-                    break  # sorry :)
+                whole_comamnd.append(line)
+                if not line.rstrip().endswith('\\'):
+                    break
 
-            command = ''.join(whole_command)
-            text = text[len(command):]  # so that we don't find it again
+            command = ''.join(whole_comamnd)
+            # Do not sclize commented matches.
             comment_index = command.find('#')
-            # only append if not matched
+            matched = match.group(0).rstrip()
             if comment_index == -1 or command.find(matched) < comment_index:
                 commands.append(command)
+
+            text = text[len(command):]
 
         return commands
 

@@ -70,6 +70,8 @@ class TestTransformer(TransformerTestCase):
 
     @pytest.mark.parametrize(('pattern', 'spec', 'expected'), [
         (re.compile(r'eat spam'), 'eat spam\neat eat spam', ['eat spam\n', 'eat eat spam']),
+        (re.compile(r'eat spam'), 'eat spam\\\neat eat spam', ['eat spam\\\neat eat spam']),
+        (re.compile(r'eat spam'), 'eat spam\\\neat \\ \n eat spam', ['eat spam\\\neat \\ \n eat spam']),
         (re.compile(r'eat spam'), 'spam eat\nand spam', []),
         (re.compile(r'eat spam'), 'eat spam \\\n and ham', ['eat spam \\\n and ham']),
         (re.compile(r'eat spam'), 'SPAM=SPAM eat spam', ['SPAM=SPAM eat spam']),
@@ -115,7 +117,8 @@ class TestTransformer(TransformerTestCase):
         assert self.st.transform_more_liners(spec, '%prep', spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
-        ('looney\nlooney\n', scl_enable + 'looney\n' + scl_disable + scl_enable + 'looney\n' + scl_disable),
+        ('looney\nlooney\n', '{0}looney\n{1}{0}looney\n{1}'.format(scl_enable, scl_disable)),
+        ('ham\n\n', '{0}ham\n{1}\n'.format(scl_enable, scl_disable)),
     ])
     def test_transformers_dont_apply_scl_enable_twice(self, spec, expected):
         assert self.st.transform_more_liners(spec, '%prep', spec) == expected
