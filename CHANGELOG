@@ -1,3 +1,10 @@
+1.1.4
+- Add `set -e` and wrap whole section in a single "scl enable" (issue #17)
+- Add support for custom prefixes for Requires/BuildRequires in "list-files" (thanks Michal Srb for patch)
+- Accept arbitrary whitespace sequence if the transformer matches the beginning of the line (issue #15)
+- Do not sclize bundled libraries in Provides tag (issue #18)
+- Add meta runtime dependency for runtime and buildtime automatically and switches to disable them (issues #12,#16)
+
 1.1.3
 - Fix regression introduced in previous release.
 
