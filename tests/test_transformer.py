@@ -70,6 +70,8 @@ class TestTransformer(TransformerTestCase):
 
     @pytest.mark.parametrize(('pattern', 'spec', 'expected'), [
         (re.compile(r'eat spam'), 'eat spam\neat eat spam', ['eat spam\n', 'eat eat spam']),
+        (re.compile(r'eat spam'), 'eat spam\\\neat eat spam', ['eat spam\\\neat eat spam']),
+        (re.compile(r'eat spam'), 'eat spam\\\neat \\ \n eat spam', ['eat spam\\\neat \\ \n eat spam']),
         (re.compile(r'eat spam'), 'spam eat\nand spam', []),
         (re.compile(r'eat spam'), 'eat spam \\\n and ham', ['eat spam \\\n and ham']),
         (re.compile(r'eat spam'), 'SPAM=SPAM eat spam', ['SPAM=SPAM eat spam']),
@@ -115,7 +117,8 @@ class TestTransformer(TransformerTestCase):
         assert self.st.transform_more_liners(spec, '%prep', spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
-        ('looney\nlooney\n', scl_enable + 'looney\n' + scl_disable + scl_enable + 'looney\n' + scl_disable),
+        ('looney\nlooney\n', '{0}looney\n{1}{0}looney\n{1}'.format(scl_enable, scl_disable)),
+        ('ham\n\n', '{0}ham\n{1}\n'.format(scl_enable, scl_disable)),
     ])
     def test_transformers_dont_apply_scl_enable_twice(self, spec, expected):
         assert self.st.transform_more_liners(spec, '%prep', spec) == expected
@@ -131,9 +134,10 @@ class TestTransformer(TransformerTestCase):
         ('# ham\n'),
         ('blahblah # ham\n'),
         ('# %%gem_install - this is a comment'),
+        ('%prep\n# ham\n\n'),
     ])
     def test_ignores_commented_commands(self, spec):
-        assert 'enable' not in self.t.transform(spec)
+        assert 'enable' not in self.t.transform(spec, transformers=[SpamTransformer()])
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('spam', 'spam'),
@@ -145,3 +149,12 @@ class TestTransformer(TransformerTestCase):
     def test_transformer_skips_transformer_functions_if_requested(self):
         t = Transformer(options={'skip_functions': ['handle_foo', 'insert_scl_init']})
         assert str(t.transform('foo')) == 'foo'
+
+    @pytest.mark.parametrize(('spec', 'expected'), [
+        ('%build\nham \nlooney\n', '%build\n{0}ham \nlooney\n{1}'.format(scl_enable, scl_disable)),
+        ('%prep\nlooney\nlooney\n\n', '%prep\n{0}looney\nlooney\n{1}'.format(scl_enable, scl_disable)),
+        ('%build\nham \\\nham\nlooney\n', '%build\n{0}ham \\\nham\nlooney\n{1}'.format(scl_enable, scl_disable)),
+    ])
+    def test_transformer_wraps_whole_sections_in_scl_enable(self, spec, expected):
+        transformed = self.t.transform(spec, transformers=[SpamTransformer()])
+        assert str(transformed) == expected

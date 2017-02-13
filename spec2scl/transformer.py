@@ -6,6 +6,10 @@ import time
 from spec2scl import specfile
 
 
+SCL_ENABLE = '%{?scl:scl enable %{scl} - << \EOF}\nset -e\n'
+SCL_DISABLE = '%{?scl:EOF}\n'
+
+
 class Transformer(object):
 
     """A base Transformer class.
@@ -83,6 +87,10 @@ class Transformer(object):
         for subtrans in self.subtransformers:
             spec = subtrans._transform(original_spec, spec)
 
+        spec.sections = [
+            (section[0], self.merge_sclized_commands(section[1]))
+            for section in spec.sections]
+
         return spec
 
     def _transform(self, original_spec, spec):
@@ -117,43 +125,39 @@ class Transformer(object):
         """
         # TODO: this is getting ugly, refactor
         commands = []
-        for match in pattern.finditer(''.join(text)):
+
+        while text:
             # find the matched string (usually beginning of command) inside text
-            matched = match.group(0)
-            if matched.endswith('\n'):
-                # if matched ends with newline, then we might have got e.g.
-                # 'make\n\n', but that will not work because we are splitting
-                # lines below, so we can only match one newline at the end
-                matched = matched.rstrip('\n') + '\n'
+            match = pattern.search(''.join(text))
+            if not match:
+                return commands
 
-            append = False
-            whole_command = []
             # now use it to get the whole command
-            index = match.start(0)
-            previous_newline = text.rfind('\n', 0, index)
+            previous_newline = text.rfind('\n', 0, match.start(0))
             # don't start from the matched pattern, but from the beginning of its line
-            stripped_text = text[previous_newline if previous_newline != -1 else 0:]
-            for line in stripped_text.splitlines(True):
-                if line.find(matched) != -1:
-                    append = True
-                if append:
-                    whole_command.append(line)
-                    if not line.rstrip().endswith('\\'):
-                        break  # sorry :)
+            text = text[previous_newline + 1:]
+            whole_comamnd = []
+            for line in text.splitlines(True):
+                whole_comamnd.append(line)
+                if not line.rstrip().endswith('\\'):
+                    break
 
-            command = ''.join(whole_command)
+            command = ''.join(whole_comamnd)
+            # Do not sclize commented matches.
             comment_index = command.find('#')
-            # only append if not matched
+            matched = match.group(0).rstrip()
             if comment_index == -1 or command.find(matched) < comment_index:
                 commands.append(command)
+
+            text = text[len(command):]
 
         return commands
 
     def sclize_one_command(self, command):
         return '{0}{1}{2}'.format(
-            '%{?scl:scl enable %{scl} - << \EOF}\n',
+            SCL_ENABLE,
             command if command.endswith('\n') else command + '\n',
-            '%{?scl:EOF}\n'
+            SCL_DISABLE
         )
 
     def sclize_all_commands(self, pattern, text):
@@ -166,6 +170,10 @@ class Transformer(object):
             text = text.replace(command, self.sclize_one_command(command))
 
         return text
+
+    def merge_sclized_commands(self, text):
+        """Merge subsequent sclized commands into one sclized section."""
+        return ''.join(text.split(SCL_DISABLE + SCL_ENABLE))
 
 
 class MetaTransformer(object):
