@@ -18,7 +18,7 @@ def handle_scl_deps(no_deps_convert, args_list_file):
     return scl_deps
 
 
-def main():
+def main(args=None):
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(description='Convert RPM specfile to be SCL ready.')
     parser.add_argument('specfiles',
@@ -70,7 +70,7 @@ def main():
                      metavar='SCL_CONTENTS_LIST'
                      )
 
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     if len(args.specfiles) > 1 and not args.i:
         parser.error('You can only convert more specfiles using -i (in place) mode.')
@@ -101,7 +101,7 @@ def main():
                 print('Could not open file: {0}'.format(e))
                 sys.exit(1)
 
-    if not sys.stdin.isatty():
+    if len(args.specfiles) == 0 and not sys.stdin.isatty():
         specs.append(sys.stdin.readlines())
 
     for spec in specs:
