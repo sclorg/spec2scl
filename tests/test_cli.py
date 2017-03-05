@@ -41,8 +41,9 @@ class TestCli(object):
         ([test_spec_path], ['%{?scl:Requires: %{scl}-runtime}',
                             '{?scl:BuildRequires: %{scl}-runtime}',
                             'Name:           %{?scl_prefix}%{pypi_name}']),
+        (['--meta-specfile=foo'], ['%global scl_name_base foo']),
         (['--meta-specfile', 'foo'], ['%global scl_name_base foo']),
-        (['--meta-specfile', '-vfoo=bar', 'foo'], ['export foo=bar']),
+        (['--meta-specfile=foo', '-vfoo=bar'], ['export foo=bar']),
     ])
     def test_options_in_spec(self, args, in_spec, capsys):
         """Test that provided options are functional."""
