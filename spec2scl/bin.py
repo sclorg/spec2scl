@@ -56,11 +56,11 @@ def get_parser():
         metavar='SCL_CONTENTS_LIST'
     )
 
-    meta_group = parser.add_argument_group(title='Metapackage optional arguments')
+    meta_group = parser.add_argument_group(title='metapackage optional arguments')
     meta_group.add_argument(
         '--meta-specfile',
         required=False,
-        help='If used, spec2scl will produce metapackage specfile based on,'
+        help='If used, spec2scl will produce metapackage specfile based on, '
              'the metapackage name provided, see SCL docs for metapackage naming.',
         metavar='METAPACKAGE_NAME'
     )

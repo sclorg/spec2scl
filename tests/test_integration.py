@@ -74,3 +74,13 @@ class TestCli(object):
         main(args=[self.test_spec_path, '--list-file={}'.format(deps_file)])
         out, err = capsys.readouterr()
         assert expected_in_spec in out
+
+    def test_integration(self, capsys):
+        """Integration test for converting a test spec file."""
+        scl_test_spec_path = '{0}/test_data/scl_test.spec'.format(tests_dir)
+        with open(scl_test_spec_path, 'r') as spec_file:
+            expected = spec_file.read()
+        main(args=[self.test_spec_path])
+        out, err = capsys.readouterr()
+        assert out == expected
+

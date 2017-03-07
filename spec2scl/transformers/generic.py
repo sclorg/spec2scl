@@ -90,7 +90,9 @@ class GenericTransformer(transformer.Transformer):
                     return '{0}{1}{2}{3}'.format(text[:index], runtime_dep, buildtime_dep, text[index:])
         return text
 
-    @matches(r'^\s*%?configure\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
-    @matches(r'^\s*make\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
-    def handle_configure_make(self, original_spec, pattern, text):
-        return self.sclize_all_commands(pattern, text)
+    @matches(r'.*', one_line=False, sections=settings.RUNTIME_SECTIONS)
+    def sclize_runtime_sections(self, original_spec, pattern, text):
+        lines = text.splitlines(True)
+        header, section = lines[0], ''.join(lines[1:])
+        return '{0}{1}{2}{3}'.format(
+            header, settings.SCL_ENABLE, section, settings.SCL_DISABLE)

@@ -11,3 +11,6 @@ SPECFILE_SECTIONS = ['%header',  # special "section" for the start of specfile
 
 RUNTIME_SECTIONS = ['%prep', '%build', '%install', '%clean', '%check']
 METAINFO_SECTIONS = ['%header', '%package']
+
+SCL_ENABLE = '%{?scl:scl enable %{scl} - << \EOF}\nset -e\n'
+SCL_DISABLE = '%{?scl:EOF}\n'

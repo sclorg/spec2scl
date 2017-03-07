@@ -3,11 +3,8 @@ import re
 import subprocess
 import time
 
+from spec2scl import settings
 from spec2scl import specfile
-
-
-SCL_ENABLE = '%{?scl:scl enable %{scl} - << \EOF}\nset -e\n'
-SCL_DISABLE = '%{?scl:EOF}\n'
 
 
 class Transformer(object):
@@ -87,10 +84,6 @@ class Transformer(object):
         for subtrans in self.subtransformers:
             spec = subtrans._transform(original_spec, spec)
 
-        spec.sections = [
-            (section[0], self.merge_sclized_commands(section[1]))
-            for section in spec.sections]
-
         return spec
 
     def _transform(self, original_spec, spec):
@@ -115,65 +108,6 @@ class Transformer(object):
             return name_match.group(1)
         else:
             return 'TODO'
-
-    def find_whole_commands(self, pattern, text):
-        """Finds all matching commands, even if they are spread accross multiple lines.
-        Args:
-            pattern: re compiled pattern matching first line of the command
-            text: string to match in
-        Returns: list of strings, each of which is a whole command, in the exact form as it occurs in the specfile
-        """
-        # TODO: this is getting ugly, refactor
-        commands = []
-
-        while text:
-            # find the matched string (usually beginning of command) inside text
-            match = pattern.search(''.join(text))
-            if not match:
-                return commands
-
-            # now use it to get the whole command
-            previous_newline = text.rfind('\n', 0, match.start(0))
-            # don't start from the matched pattern, but from the beginning of its line
-            text = text[previous_newline + 1:]
-            whole_comamnd = []
-            for line in text.splitlines(True):
-                whole_comamnd.append(line)
-                if not line.rstrip().endswith('\\'):
-                    break
-
-            command = ''.join(whole_comamnd)
-            # Do not sclize commented matches.
-            comment_index = command.find('#')
-            matched = match.group(0).rstrip()
-            if comment_index == -1 or command.find(matched) < comment_index:
-                commands.append(command)
-
-            text = text[len(command):]
-
-        return commands
-
-    def sclize_one_command(self, command):
-        return '{0}{1}{2}'.format(
-            SCL_ENABLE,
-            command if command.endswith('\n') else command + '\n',
-            SCL_DISABLE
-        )
-
-    def sclize_all_commands(self, pattern, text):
-        commands = self.find_whole_commands(pattern, text)
-        # if there are multiple same commands, we only want to replace each once
-        # => take only unique values by list(set())
-        commands = list(set(commands))
-
-        for command in commands:
-            text = text.replace(command, self.sclize_one_command(command))
-
-        return text
-
-    def merge_sclized_commands(self, text):
-        """Merge subsequent sclized commands into one sclized section."""
-        return ''.join(text.split(SCL_DISABLE + SCL_ENABLE))
 
 
 class MetaTransformer(object):

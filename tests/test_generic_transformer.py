@@ -130,15 +130,10 @@ class TestGenericTransformer(TransformerTestCase):
         assert self.t.handle_meta_deps(spec, None, spec) == expected
 
     @pytest.mark.parametrize(('spec', 'expected'), [
-        ('configure\n', scl_enable + 'configure\n' + scl_disable),
-        ('%configure ', scl_enable + '%configure \n' + scl_disable),
-        ('%configure --foo \\n --bar', scl_enable + '%configure --foo \\n --bar\n' + scl_disable),
-        ('make ', scl_enable + 'make \n' + scl_disable),
-        ('make foo\n', scl_enable + 'make foo\n' + scl_disable),
-        ('  make foo\n', scl_enable + '  make foo\n' + scl_disable),
+        ('%build\ntest\n\n', '%build\n{0}test\n{1}'.format(scl_enable, scl_disable)),
+        ('%prep\ntest\ntest\n\n', '%prep\n{0}test\ntest\n{1}'.format(scl_enable, scl_disable)),
+        ('%check\ntest \\\ntest\n\n', '%check\n{0}test \\\ntest\n{1}'.format(scl_enable, scl_disable)),
     ])
-    def test_handle_configure_make(self, spec, expected):
-        spec = self.make_prep(spec)
-        pattern = self.get_pattern_for_spec(self.t.handle_configure_make, spec)
-        assert pattern
-        assert self.t.handle_configure_make(spec, pattern, spec) == self.make_prep(expected)
+    def test_sclize_runtime_sections(self, spec, expected):
+        transformed = self.t.transform(spec)
+        assert expected in str(transformed)
