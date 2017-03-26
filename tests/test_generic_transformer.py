@@ -1,6 +1,6 @@
 import pytest
 
-from spec2scl.transformers.generic import GenericTransformer
+from spec2scl.transformers import GenericTransformer
 
 from tests.transformer_test_case import TransformerTestCase, scl_enable, scl_disable
 
@@ -86,7 +86,7 @@ class TestGenericTransformer(TransformerTestCase):
     ])
     def test_handle_subpackages_should_not_sclize(self, spec, expected):
         handler = self.t.handle_subpackages
-        assert self.get_pattern_for_spec(handler, spec) == None
+        assert self.get_pattern_for_spec(handler, spec) is None
 
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('%setup', '%setup -n %{pkg_name}-%{version}'),

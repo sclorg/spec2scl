@@ -1,3 +1,6 @@
+"""Transformation related settings and constants.
+"""
+
 SPECFILE_SECTIONS = ['%header',  # special "section" for the start of specfile
                      '%description',
                      '%package',

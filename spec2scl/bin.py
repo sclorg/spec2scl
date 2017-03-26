@@ -1,7 +1,13 @@
+"""Spec2scl entry point.
+
+To be installed as /usr/bin/spec2scl.
+"""
+
 import argparse
 import sys
 
 from spec2scl.convertor import Convertor
+from spec2scl.metapackage import Metapackage
 
 
 def get_parser():
@@ -56,7 +62,7 @@ def get_parser():
         metavar='SCL_CONTENTS_LIST'
     )
 
-    meta_group = parser.add_argument_group(title='metapackage optional arguments')
+    meta_group = parser.add_argument_group(title='metapackage arguments')
     meta_group.add_argument(
         '--meta-specfile',
         required=False,
@@ -79,10 +85,18 @@ def main(args=None):
     parser = get_parser()
     args = parser.parse_args(args)
 
+    # Produce a metapackage specfile.
+    if args.meta_specfile:
+        metapackage = Metapackage(
+            meta_name=args.meta_specfile,
+            variables=args.variables)
+        print(metapackage.create_specfile())
+        return
+
     if len(args.specfiles) > 1 and not args.i:
         parser.error('You can only convert more specfiles using -i (in place) mode.')
 
-    if len(args.specfiles) == 0 and sys.stdin.isatty() and not args.meta_specfile:
+    if len(args.specfiles) == 0 and sys.stdin.isatty():
         parser.error('You must either specify specfile(s) or reading from stdin.')
 
     args.skip_functions = args.skip_functions.split(',')
@@ -92,12 +106,6 @@ def main(args=None):
     except IOError as e:
         print('Could not open file: {0}'.format(e))
         sys.exit(1)
-
-    # Produce a metapackage specfile.
-    if args.meta_specfile:
-        meta_specfile = convertor.create_meta_specfile()
-        print(meta_specfile)
-        return
 
     specs = []
     # Convert a single specfile from stdin.

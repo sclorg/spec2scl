@@ -1,3 +1,9 @@
+"""A specfile interdace.
+
+Used mainly by transformer and tests to represent
+a conventional specfile as a structure of sections.
+"""
+
 try:
     from functools import reduce
 except ImportError:
@@ -9,15 +15,21 @@ from spec2scl import settings
 
 class Specfile(object):
 
+    """An specfile interface."""
+
     def __init__(self, specfile):
         if not isinstance(specfile, str):
-            self.specfile = ''.join(specfile)
-        else:
-            self.specfile = specfile
+            specfile = ''.join(specfile)
 
+        self.specfile = specfile
         self.sections = self.split_sections()
 
     def split_sections(self):
+        """Split a specfile into sections.
+
+        Return:
+            list of (section name, section text)
+        """
         headers_re = [re.compile('^' + x, re.M) for x in settings.SPECFILE_SECTIONS]
         section_starts = []
         for header in headers_re:

@@ -1,3 +1,10 @@
+"""Transformer decorations.
+
+matches is a decorator which functions as an annotation for
+trunsformer handlers to store pattrens and sections they
+should be applied to as method arguments.
+"""
+
 import re
 
 from spec2scl import settings
