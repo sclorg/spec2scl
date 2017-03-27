@@ -83,5 +83,3 @@ class TestCli(object):
         main(args=[self.test_spec_path])
         out, err = capsys.readouterr()
         assert out == expected
-
-    # TODO: tests for metaspecfile

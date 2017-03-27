@@ -32,7 +32,6 @@ Requires:       %{?scl_prefix}python3-jinja2
 spec2scl is a tool to convert RPM specfiles to SCL-style specfiles.
 
 
-
 %prep
 %{?scl:scl enable %{scl} - << \EOF}
 set -e

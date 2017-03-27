@@ -25,7 +25,6 @@ Requires:       python3-jinja2
 %description
 spec2scl is a tool to convert RPM specfiles to SCL-style specfiles.
 
-
 %prep
 %setup -q -n %{pypi_name}-%{version}
 # Remove bundled egg-info

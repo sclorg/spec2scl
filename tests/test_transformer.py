@@ -1,6 +1,4 @@
 # TODO: use mocking to test functions in isolation
-import re
-
 import pytest
 
 from spec2scl import settings
