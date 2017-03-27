@@ -110,6 +110,7 @@ class Transformer(object):
 
         return section_text
 
+    # these methods are helpers for the actual transformations
     def get_original_name(self, original_spec):
         """Return the name of the package as defined in the specfile."""
         name_match = re.compile(r'Name:\s*([^\s]+)').search(original_spec)

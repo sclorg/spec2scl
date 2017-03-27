@@ -1,4 +1,4 @@
-"""A specfile interdace.
+"""A specfile interface.
 
 Used mainly by transformer and tests to represent
 a conventional specfile as a structure of sections.

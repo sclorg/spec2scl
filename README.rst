@@ -2,6 +2,15 @@
 spec2scl
 ========
 
+.. image:: https://img.shields.io/pypi/v/spec2scl.svg
+    :target: https://pypi.python.org/pypi/spec2scl
+
+.. image:: https://travis-ci.org/sclorg/spec2scl.svg?branch=master
+    :target: https://travis-ci.org/sclorg/spec2scl
+
+.. image:: https://img.shields.io/github/license/sclorg/spec2scl.svg?style=flat
+    :target: https://opensource.org/licenses/MIT
+
 spec2scl is a tool to convert RPM specfiles to SCL-style specfiles.
 
 To get more info about Software Collections, see:
@@ -12,22 +21,19 @@ To get more info about Software Collections, see:
 Usage (print this by running spec2scl -h)::
 
 
-    usage: spec2scl [-h] [--meta-specfile] [-i] [-r] [-b] [-k SKIP_FUNCTIONS]
-                    [-v VARIABLES] [-n | -l SCL_CONTENTS_LIST]
+    usage: mybin.py [-h] [-i] [-r] [-b] [-k SKIP_FUNCTIONS]
+                    [-n | -l SCL_CONTENTS_LIST] [--meta-specfile METAPACKAGE_NAME]
+                    [-v VARIABLES]
                     [ARGUMENT [ARGUMENT ...]]
 
     Convert RPM specfile to be SCL ready.
 
     positional arguments:
-      ARGUMENT              Paths to the specfiles or name of the meta package,
-                            see --meta-specfile.
+      ARGUMENT              Path(s) to the specfile(s).
 
     optional arguments:
       -h, --help            show this help message and exit
-      --meta-specfile       If used, spec2scl will produce metapackage specfile
-                            based on ARGUMENT, ARGUMENT must be the metapackage
-                            name, see SCL docs for metapackage naming.
-      -i                    Convert in place (replaces old specfiles with the new
+      -i                    Convert in place (replace old specfiles with the new
                             generated ones). Mandatory when multiple specfiles are
                             to be converted.
       -r, --no-meta-runtime-dep
@@ -37,10 +43,7 @@ Usage (print this by running spec2scl -h)::
                             Don't add the buildtime dependency on the scl runtime
                             package.
       -k SKIP_FUNCTIONS, --skip-functions SKIP_FUNCTIONS
-                            Comma separated list of transformer functions to skip
-      -v VARIABLES, --variables VARIABLES
-                            List of variables separated with comma, used only with
-                            --meta-specfile option
+                            Comma separated list of transformer functions to skip.
       -n, --no-deps-convert
                             Don't convert dependency tags (mutually exclusive with
                             -l).
@@ -50,6 +53,12 @@ Usage (print this by running spec2scl -h)::
                             the file are in form of "pkg-name %{?custom_prefix}",
                             where the prefix part is optional.
 
-
+    metapackage arguments:
+      --meta-specfile METAPACKAGE_NAME
+                            Produce metapackage specfile based on the metapackage
+                            name provided, see SCL docs for metapackage naming.
+      -v VARIABLES, --variables VARIABLES
+                            List of variables separated with comma (used only with
+                            --meta-specfile option).
 
 spec2scl is licensed under MIT license.

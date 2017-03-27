@@ -1,4 +1,4 @@
-"""Spec2scl Convertor object.
+"""spec2scl Convertor.
 
 Used by spec2scl and pyp2rpm CLI entry points.
 """

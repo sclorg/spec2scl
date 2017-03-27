@@ -1,4 +1,4 @@
-"""Spec2scl entry point.
+"""spec2scl entry point.
 
 To be installed as /usr/bin/spec2scl.
 """
@@ -15,13 +15,13 @@ def get_parser():
     parser = argparse.ArgumentParser(description='Convert RPM specfile to be SCL ready.')
     parser.add_argument(
         'specfiles',
-        help='Paths to the specfiles or name of the meta package, see --meta-specfile.',
+        help='Path(s) to the specfile(s).',
         metavar='ARGUMENT',
         nargs='*',
     )
     parser.add_argument(
         '-i',
-        help='Convert in place (replaces old specfiles with the new generated ones).'
+        help='Convert in place (replace old specfiles with the new generated ones).'
              ' Mandatory when multiple specfiles are to be converted.',
         required=False,
         action='store_true'
@@ -42,7 +42,7 @@ def get_parser():
         '-k', '--skip-functions',
         required=False,
         default="",
-        help='Comma separated list of transformer functions to skip',
+        help='Comma separated list of transformer functions to skip.',
     )
 
     grp = parser.add_mutually_exclusive_group(required=False)
@@ -66,16 +66,16 @@ def get_parser():
     meta_group.add_argument(
         '--meta-specfile',
         required=False,
-        help='If used, spec2scl will produce metapackage specfile based on, '
-             'the metapackage name provided, see SCL docs for metapackage naming.',
+        help='Produce metapackage specfile based on the metapackage '
+             'name provided, see SCL docs for metapackage naming.',
         metavar='METAPACKAGE_NAME'
     )
     meta_group.add_argument(
         '-v', '--variables',
         required=False,
         default="",
-        help='List of variables separated with comma, used only with'
-             ' --meta-specfile option',
+        help='List of variables separated with comma (used only with'
+             ' --meta-specfile option).',
     )
     return parser
 
