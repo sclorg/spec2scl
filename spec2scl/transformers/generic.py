@@ -1,12 +1,18 @@
 import re
 
-from spec2scl.decorators import matches
 from spec2scl import settings
 from spec2scl import transformer
+from spec2scl.decorators import matches
 
 
 @transformer.Transformer.register_transformer
 class GenericTransformer(transformer.Transformer):
+
+    """A collection of matching methods.
+
+    Applies to all spec files regardless of package specifics.
+    """
+
     def __init__(self, options={}):
         super(GenericTransformer, self).__init__(options)
 
@@ -29,7 +35,7 @@ class GenericTransformer(transformer.Transformer):
 
             scl_deps = self.options['scl_deps']
 
-            if scl_deps == True or (scl_deps_effect and scl_deps and groupdict['dep'] in scl_deps):
+            if scl_deps is True or (scl_deps_effect and scl_deps and groupdict['dep'] in scl_deps):
                 prefix = ''
                 if isinstance(scl_deps, dict):
                     prefix = scl_deps[groupdict['dep']]
@@ -78,11 +84,17 @@ class GenericTransformer(transformer.Transformer):
 
     @matches(r'.*', one_line=False, sections=['%header'])
     def handle_meta_deps(self, original_spec, pattern, text):
-        runtime_dep = '' if self.options['no_meta_runtime_dep'] else '%{?scl:Requires: %{scl}-runtime}\n'
-        buildtime_dep = '' if self.options['no_meta_buildtime_dep'] else '%{?scl:BuildRequires: %{scl}-runtime}\n'
+        runtime_dep = (
+            '' if self.options['no_meta_runtime_dep']
+            else '%{?scl:Requires: %{scl}-runtime}\n')
+
+        buildtime_dep = (
+            '' if self.options['no_meta_buildtime_dep']
+            else '%{?scl:BuildRequires: %{scl}-runtime}\n')
 
         if runtime_dep or buildtime_dep:
-            place_before_re = [re.compile(i, re.MULTILINE) for i in ['(^BuildRequires)', '(^Requires)', '(^Name)']]
+            place_before_re = [re.compile(i, re.MULTILINE) for i in
+                               ['(^BuildRequires)', '(^Requires)', '(^Name)']]
             for pb in place_before_re:
                 match = pb.search(text)
                 if match:
@@ -90,7 +102,9 @@ class GenericTransformer(transformer.Transformer):
                     return '{0}{1}{2}{3}'.format(text[:index], runtime_dep, buildtime_dep, text[index:])
         return text
 
-    @matches(r'^\s*%?configure\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
-    @matches(r'^\s*make\s+', one_line=False, sections=settings.RUNTIME_SECTIONS)
-    def handle_configure_make(self, original_spec, pattern, text):
-        return self.sclize_all_commands(pattern, text)
+    @matches(r'.*', one_line=False, sections=settings.RUNTIME_SECTIONS)
+    def sclize_runtime_sections(self, original_spec, pattern, text):
+        lines = text.splitlines(True)
+        header, section = lines[0], ''.join(lines[1:])
+        return '{0}{1}{2}{3}'.format(
+            header, settings.SCL_ENABLE, section, settings.SCL_DISABLE)

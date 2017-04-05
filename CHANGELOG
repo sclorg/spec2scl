@@ -1,3 +1,6 @@
+Upcoming (1.2)
+- Wrap whole runtime sections in "scl enable"
+
 1.1.4
 - Add `set -e` and wrap whole section in a single "scl enable" (issue #17)
 - Add support for custom prefixes for Requires/BuildRequires in "list-files" (thanks Michal Srb for patch)

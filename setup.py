@@ -7,7 +7,6 @@ from spec2scl.version import version
 
 try:
     from setuptools import setup, find_packages
-    from setuptools.command.test import test as TestCommand
 except:
     from distutils.core import setup, find_packages
 
@@ -17,20 +16,8 @@ else:
     install_requires = ['jinja2']
 
 
-class PyTest(TestCommand):
+description = "spec2scl is a tool to convert RPM specfiles to SCL-style specfiles."
 
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = ['tests']
-        self.test_suite = True
-
-    def run_tests(self):
-        # import here, cause outside the eggs aren't loaded
-        import pytest
-        errno = pytest.main(self.test_args)
-        sys.exit(errno)
-
-description = """spec2scl is a tool to convert RPM specfiles to SCL-style specfiles."""
 
 setup(
     name='spec2scl',
@@ -44,11 +31,11 @@ setup(
     license='MIT',
     packages=find_packages(exclude=['tests']),
     package_data={'spec2scl': ['templates/*.spec']},
-    setup_requires=['pytest',
+    setup_requires=['pytest-runner',
                     'flexmock >= 0.9.3'
                     ] + install_requires,
     install_requires=install_requires,
-    cmdclass={'test': PyTest},
+    tests_require=['pytest'],
     entry_points={'console_scripts': ['spec2scl = spec2scl.bin:main']},
     classifiers=['Development Status :: 4 - Beta',
                  'Environment :: Console',

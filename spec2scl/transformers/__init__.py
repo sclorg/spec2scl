@@ -1,21 +1,17 @@
-"""Package initialization.
+"""Transformer plugins.
 
-Basically equivalent to:
-from spec2scl.transformers import generic
-from spec2scl.transformers import perl
-from spec2scl.transformers import php
-from spec2scl.transformers import python
-from spec2scl.transformers import R
-from spec2scl.transformers import ruby
+Each transformer plugin represents a collection of methods
+decorated with `matches`, where the method is a handler
+and performs transformation, and the decorator stores
+regex patterns and specfile sections they should be applied to.
+
+The base Transformer class is responsible for collecting
+those methods and call them on a specfile.
+
+To register a new plugin add a new file with a plugin class
+which should inherit from base Transformer, register it
+with `register_transformer` decorator and import here.
+The base Transformer class will take care of the rest.
 """
 
-import importlib
-import os
-
-files_in_transformers_dir = list(os.listdir(os.path.dirname(__file__)))
-py_files_in_transformers_dir = filter(lambda x: x.endswith('.py'), files_in_transformers_dir)
-modules_to_load = list(map(lambda x: x[:-3], py_files_in_transformers_dir))
-modules_to_load.remove('__init__')
-
-for m in modules_to_load:
-    importlib.import_module('{0}.{1}'.format(__package__, m))
+from spec2scl.transformers.generic import GenericTransformer  # noqa
