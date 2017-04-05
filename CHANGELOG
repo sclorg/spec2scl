@@ -1,5 +1,6 @@
 Upcoming (1.2)
-- Wrap whole runtime sections in "scl enable"
+- Wrap whole runtime sections in "scl enable" (issue #27)
+- Add a man page (issue #29)
 
 1.1.4
 - Add `set -e` and wrap whole section in a single "scl enable" (issue #17)

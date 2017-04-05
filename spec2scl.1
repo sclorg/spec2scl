@@ -1,0 +1,76 @@
+.TH SPEC2SCL "1"
+.SH NAME
+spec2scl \- manual page for spec2scl
+.SH DESCRIPTION
+usage: spec2scl [\-h] [\-V] [\-i] [\-r] [\-b] [\-k SKIP_FUNCTIONS]
+[\-n | \fB\-l\fR SCL_CONTENTS_LIST]
+[\-\-meta\-specfile METAPACKAGE_NAME] [\-v VARIABLES]
+[ARGUMENT [ARGUMENT ...]]
+.PP
+Convert RPM specfile to be SCL ready.
+.SS "positional arguments:"
+.TP
+ARGUMENT
+Path(s) to the specfile(s).
+.SS "optional arguments:"
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+show this help message and exit
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+show spec2scl version
+.TP
+\fB\-i\fR
+Convert in place (replace old specfiles with the new
+generated ones). Mandatory when multiple specfiles are
+to be converted.
+.TP
+\fB\-r\fR, \fB\-\-no\-meta\-runtime\-dep\fR
+Don't add the runtime dependency on the scl runtime
+package.
+.TP
+\fB\-b\fR, \fB\-\-no\-meta\-buildtime\-dep\fR
+Don't add the buildtime dependency on the scl runtime
+package.
+.TP
+\fB\-k\fR SKIP_FUNCTIONS, \fB\-\-skip\-functions\fR SKIP_FUNCTIONS
+Comma separated list of transformer functions to skip.
+.TP
+\fB\-n\fR, \fB\-\-no\-deps\-convert\fR
+Don't convert dependency tags (mutually exclusive with
+\fB\-l\fR).
+.TP
+\fB\-l\fR SCL_CONTENTS_LIST, \fB\-\-list\-file\fR SCL_CONTENTS_LIST
+List of the packages/provides, that will be in the SCL
+(to convert Requires/BuildRequires properly). Lines in
+the file are in form of "pkg\-name %{?custom_prefix}",
+where the prefix part is optional.
+.SS "metapackage arguments:"
+.TP
+\fB\-\-meta\-specfile\fR METAPACKAGE_NAME
+Produce metapackage specfile based on the metapackage
+name provided, see SCL docs for metapackage naming.
+.TP
+\fB\-v\fR VARIABLES, \fB\-\-variables\fR VARIABLES
+List of variables separated with comma (used only with
+\fB\-\-meta\-specfile\fR option).
+
+.SH EXAMPLES
+.TP
+.B spec2scl [SPECFILE_PATH]
+Convert an RPM specfile into an SCL specfile
+.TP
+.B spec2scl -i [SPECFILE_PATH [SPECFILE_PATH ...]]
+Convert one or more RPM specfiles into SCL specfiles and replace the original files
+.TP
+.B spec2scl --meta-specfile [METAPACKAGE_NAME]
+Create a specfile for a metapackage with a name METAPACKAGE_NAME
+
+.SH LANGUAGE
+PYTHON
+
+.SH LICENCE
+MIT
+
+.SH AUTHOR
+Writen by Slavek Kabrda, Robert Kuska, Iryna Shcherbina
