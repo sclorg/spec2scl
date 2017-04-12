@@ -13,7 +13,6 @@ class TestCli(object):
     test_spec_path = '{0}/test_data/test.spec'.format(tests_dir)
 
     @pytest.mark.parametrize(('args', 'expected_message'), [
-        ([], 'You must either specify specfile(s) or reading from stdin.'),
         ([test_spec_path, 'foo'], 'You can only convert more specfiles'
          ' using -i (in place) mode.'),
         ([test_spec_path, '-n', '-l foo.txt'], 'argument -l/--list-file:'

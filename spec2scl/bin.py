@@ -8,6 +8,7 @@ import sys
 
 from spec2scl.convertor import Convertor
 from spec2scl.metapackage import Metapackage
+from spec2scl.version import version
 
 
 def get_parser():
@@ -18,6 +19,12 @@ def get_parser():
         help='Path(s) to the specfile(s).',
         metavar='ARGUMENT',
         nargs='*',
+    )
+    parser.add_argument(
+        '-V', '--version',
+        help='show spec2scl version',
+        action='version',
+        version=version,
     )
     parser.add_argument(
         '-i',
