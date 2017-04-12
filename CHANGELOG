@@ -1,4 +1,4 @@
-Upcoming (1.2)
+1.2
 - Wrap whole runtime sections in "scl enable" (issue #27)
 - Add a man page (issue #29)
 
