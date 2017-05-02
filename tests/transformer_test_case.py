@@ -1,7 +1,7 @@
 from spec2scl import specfile
 
 
-scl_enable = '%{?scl:scl enable %{scl} - << \EOF}\nset -e\n'
+scl_enable = '%{?scl:scl enable %{scl} - << \EOF}\nset -ex\n'
 scl_disable = '%{?scl:EOF}\n'
 
 

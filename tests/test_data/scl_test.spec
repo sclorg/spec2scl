@@ -34,7 +34,7 @@ spec2scl is a tool to convert RPM specfiles to SCL-style specfiles.
 
 %prep
 %{?scl:scl enable %{scl} - << \EOF}
-set -e
+set -ex
 %setup -q -n %{pypi_name}-%{version}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
@@ -43,21 +43,21 @@ rm -rf %{pypi_name}.egg-info
 
 %build
 %{?scl:scl enable %{scl} - << \EOF}
-set -e
+set -ex
 %{__python3} setup.py build
 %{?scl:EOF}
 
 
 %install
 %{?scl:scl enable %{scl} - << \EOF}
-set -e
+set -ex
 %{__python3} setup.py install --skip-build --root %{buildroot}
 %{?scl:EOF}
 
 
 %check
 %{?scl:scl enable %{scl} - << \EOF}
-set -e
+set -ex
 %if 0%{?fedora}
 PYTHONPATH=$(pwd) py.test-%{python3_version}
 %endif
