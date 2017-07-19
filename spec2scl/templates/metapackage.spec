@@ -44,7 +44,7 @@ Package shipping essential configuration macros to build %scl Software Collectio
 Summary: Package shipping development files for %scl
 
 %description scldevel
-Package shipping development files, especially usefull for development of
+Package shipping development files, especially useful for development of
 packages depending on %scl Software Collection.
 
 %prep
