@@ -30,7 +30,7 @@ class Specfile(object):
         Return:
             list of (section name, section text)
         """
-        headers_re = [re.compile('^' + x, re.M) for x in settings.SPECFILE_SECTIONS]
+        headers_re = [re.compile('^' + x + '\\b', re.M) for x in settings.SPECFILE_SECTIONS]
         section_starts = []
         for header in headers_re:
             for match in header.finditer(self.specfile):
@@ -47,7 +47,7 @@ class Specfile(object):
                 curr_section = self.specfile[section_starts[i]:]
             for header in headers_re:
                 if header.match(curr_section):
-                    sections.append((header.pattern[1:], curr_section))
+                    sections.append((header.pattern[1:-2], curr_section))
 
         return sections
 
