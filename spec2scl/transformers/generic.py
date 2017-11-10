@@ -80,6 +80,10 @@ class GenericTransformer(transformer.Transformer):
 
     @matches(r'%{name}', sections=settings.SPECFILE_SECTIONS)
     def handle_name_macro(self, original_spec, pattern, text):
+        # instances of name macro in these tags should be left alone because they are
+        # intentionally referring to the name of the rpm we are currently processing
+        if text.startswith(('Obsoletes:', 'Provides:', 'Requires:', 'BuildRequires:')):
+            return text
         return pattern.sub(r'%{pkg_name}', text)
 
     @matches(r'.*', one_line=False, sections=['%header'])
