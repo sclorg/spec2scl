@@ -55,7 +55,7 @@ class GenericTransformer(transformer.Transformer):
         dep_re = re.compile(r'(?P<prespace>\s*)(?P<dep>([^\s]+(.+\))?))(?P<ver>\s*[<>=!]+\s*[^\s]+)?(?P<postspace>\s*)')
         return tag + dep_re.sub(handle_one_dep, deps)
 
-    @matches(r'(?<!d)(Requires:\s*)(?!\w*/\w*)([^[\s]+)', sections=settings.METAINFO_SECTIONS)  # avoid BuildRequires
+    @matches(r'(?<!d)(Requires(\([a-z]+\))?:\s*)(?!\w*/\w*)([^[\s]+)', sections=settings.METAINFO_SECTIONS)  # avoid BuildRequires
     @matches(r'(BuildRequires:\s*)(?!\w*/\w*)([^\s]+)', sections=settings.METAINFO_SECTIONS)
     def handle_dependency_tag_modified_by_list(self, original_spec, pattern, text):
         return self.handle_dependency_tag(original_spec, pattern, text, True)

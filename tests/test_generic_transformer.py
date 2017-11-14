@@ -49,6 +49,7 @@ class TestGenericTransformer(TransformerTestCase):
     @pytest.mark.parametrize(('spec', 'expected'), [
         ('Requires: /foo/spam', 'Requires: %{?_scl_root}/foo/spam'),
         ('Requires: spam /foo/eggs', 'Requires: %{?scl_prefix}spam %{?_scl_root}/foo/eggs'),
+        ('Requires(pre): javapackages-tools', 'Requires(pre): %{?scl_prefix}javapackages-tools'),
     ])
     def test_handle_dependency_tag_with_path(self, spec, expected):
         handler = self.t.handle_dependency_tag
@@ -64,6 +65,7 @@ class TestGenericTransformer(TransformerTestCase):
         ('BuildRequires: python(spam)', {'python(spam)': '', 'spam': ''}, 'BuildRequires: %{?scl_prefix}python(spam)'),
         ('BuildRequires: python(spam)', {'python(spam)': '%{?scl_prefix_python27}'}, 'BuildRequires: %{?scl_prefix_python27}python(spam)'),
         ('BuildRequires: spam', {'egg': '%{?scl_prefix_python27}'}, 'BuildRequires: spam'),
+        ('Requires(post): javapackages-tools', {'javapackages-tools': '%{?scl_prefix_maven}'}, 'Requires(post): %{?scl_prefix_maven}javapackages-tools'),
     ])
     def test_handle_dependency_tag_modified_scl_deps(self, spec, scl_deps, expected):
         handler = self.t.handle_dependency_tag_modified_by_list

@@ -27,6 +27,10 @@ BuildRequires:  %{?scl_prefix}python3-pytest
 Requires:       %{?scl_prefix}python3-setuptools
 Requires:       %{?scl_prefix}python3-jinja2
 
+# Scriptlet-specific requirements
+Requires(pre):  %{?scl_prefix}some-package
+Requires(post): %{?scl_prefix}some-package
+
 
 %description
 spec2scl is a tool to convert RPM specfiles to SCL-style specfiles.
