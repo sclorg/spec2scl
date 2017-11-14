@@ -133,7 +133,7 @@ class TestGenericTransformer(TransformerTestCase):
         ('%build\ntest\n\n', '%build\n{0}test\n{1}'.format(scl_enable, scl_disable)),
         ('%prep\ntest\ntest\n\n', '%prep\n{0}test\ntest\n{1}'.format(scl_enable, scl_disable)),
         ('%check\ntest \\\ntest\n\n', '%check\n{0}test \\\ntest\n{1}'.format(scl_enable, scl_disable)),
-        ('%install\ntest\n\n%postun\ntrue\n\n', '%install\n{0}test\n{1}\n\n%postun\n{2}true\n{3}'.format(scl_enable, scl_disable, scl_enable, scl_disable)),
+        ('%install\ntest\n\n%postun\ntrue\n\n', '%install\n{0}test\n{1}\n\n%postun\n{0}true\n{1}'.format(scl_enable, scl_disable)),
     ])
     def test_sclize_runtime_sections(self, spec, expected):
         transformed = self.t.transform(spec)
