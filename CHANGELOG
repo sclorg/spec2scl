@@ -1,3 +1,10 @@
+1.2.1
+- Add a missing -x option to set command (issue #17)
+- Do not transform the %{name} macro for Obsoletes, Provides, Requires, BuildRequires
+  (thanks Mat Booth for the patch)
+- Add support for scriptlet runtime sections and transforming scriptlet-specific
+  dependencies (thanks Mat Booth for the patches)
+
 1.2.0
 - Wrap whole runtime sections in "scl enable" (issue #27)
 - Add a man page (issue #29)
