@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 import sys
 
 from spec2scl.version import version
 
 try:
     from setuptools import setup, find_packages
-except:
+except ImportError:
     from distutils.core import setup, find_packages
 
 if sys.version_info < (2, 7):
@@ -27,6 +29,8 @@ setup(
     keywords='rpm, spec, specfile, convert, scl, dsc',
     author='Slavek Kabrda, Robert Kuska, Iryna Shcherbina',
     author_email='slavek@redhat.com, rkuska@redhat.com, ishcherb@redhat.com',
+    maintainer='Jan Staněk',
+    maintainer_email='jstanek@redhat.com',
     url='https://bitbucket.org/bkabrda/spec2scl/',
     license='MIT',
     packages=find_packages(exclude=['tests']),
