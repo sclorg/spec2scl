@@ -3,6 +3,8 @@
 Used by CLI command to produce a spec file for SCL metapackage.
 """
 
+from __future__ import unicode_literals
+
 import jinja2
 import locale
 import re
