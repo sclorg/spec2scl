@@ -1,3 +1,6 @@
+1.2.2
+- Fix and/or silence deprecation warnings on newer Python versions (issue #38)
+
 1.2.1
 - Add a missing -x option to set command (issue #17)
 - Do not transform the %{name} macro for Obsoletes, Provides, Requires, BuildRequires
