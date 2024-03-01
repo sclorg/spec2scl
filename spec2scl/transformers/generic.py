@@ -18,7 +18,7 @@ class GenericTransformer(transformer.Transformer):
 
     @matches(r'^', one_line=False, sections=['%header'])
     def insert_scl_init(self, original_spec, pattern, text):
-        scl_init = '%{{?scl:%scl_package {0}}}\n%{{!?scl:%global pkg_name %{{name}}}}'.format(self.get_original_name(original_spec))
+        scl_init = '%{{?scl:%scl_package {0}}}\n%{{!?scl:%global pkg_name %{{name}}}}\n%if 0%{?fedora} || 0%{?rhel} >= 7\n%global brp_python_hardlink /usr/lib/rpm/brp-python-hardlink\n%else\n%global brp_python_hardlink /usr/lib/rpm/redhat/brp-python-hardlink\n%endif\n%if  0%{?rhel} == 6\n%global __os_install_post /usr/lib/rpm/brp-compress %{!?__debug_package:/usr/lib/rpm/brp-strip %{__strip}} /usr/lib/rpm/brp-strip-static-archive %{__strip} /usr/lib/rpm/brp-strip-comment-note %{__strip} %{__objdump}\n%else\n%global __os_install_post /usr/lib/rpm/brp-compress %{!?__debug_package:/usr/lib/rpm/brp-strip %{__strip}} /usr/lib/rpm/brp-strip-static-archive %{__strip} /usr/lib/rpm/brp-strip-comment-note %{__strip} %{__objdump} %{brp_python_hardlink}\n%endif'.format(self.get_original_name(original_spec))
         return '{0}\n\n{1}'.format(scl_init, text)
 
     @matches(r'(?<!d)(Conflicts:\s*)([^\s]+)', sections=settings.METAINFO_SECTIONS)  # avoid BuildConflicts
