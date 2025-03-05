@@ -35,11 +35,8 @@ setup(
     license='MIT',
     packages=find_packages(exclude=['tests']),
     package_data={'spec2scl': ['templates/*.spec']},
-    setup_requires=['pytest-runner',
-                    'flexmock >= 0.9.3'
-                    ] + install_requires,
+    setup_requires=['flexmock >= 0.9.3'] + install_requires,
     install_requires=install_requires,
-    tests_require=['pytest'],
     entry_points={'console_scripts': ['spec2scl = spec2scl.bin:main']},
     classifiers=['Development Status :: 4 - Beta',
                  'Environment :: Console',
